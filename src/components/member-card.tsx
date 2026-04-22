@@ -3,6 +3,10 @@ import Link from "next/link";
 import { formatDisplayDate, type Member } from "@/lib/congress-data";
 
 export function MemberCard({ member }: { member: Member }) {
+  const isVacantSeat = !member.fullName.trim();
+  const displayName = isVacantSeat ? "Vacant Seat" : member.fullName;
+  const displayPartyLabel = isVacantSeat ? "Vacant" : member.partyName;
+
   return (
     <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_16px_40px_rgba(12,33,58,0.06)]">
       <div className="flex items-start justify-between gap-4">
@@ -10,19 +14,21 @@ export function MemberCard({ member }: { member: Member }) {
           <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">
             {member.chamber === "house" ? "House" : "Senate"}
           </p>
-          <h3 className="mt-2 font-serif text-2xl text-[var(--ink)]">{member.fullName}</h3>
+          <h3 className="mt-2 font-serif text-2xl text-[var(--ink)]">{displayName}</h3>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{member.roleLabel}</p>
         </div>
         <span
           className={`rounded-full px-3 py-1 text-xs font-medium ${
-            member.partyCode === "R"
+            isVacantSeat
+              ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]"
+              : member.partyCode === "R"
               ? "bg-[rgba(176,48,53,0.12)] text-[var(--accent-red)]"
               : member.partyCode === "D"
                 ? "bg-[rgba(36,82,164,0.12)] text-[var(--accent-blue)]"
                 : "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]"
           }`}
         >
-          {member.partyName}
+          {displayPartyLabel}
         </span>
       </div>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">

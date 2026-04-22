@@ -128,6 +128,11 @@ function DelegationCard({
 }
 
 function MemberListItem({ member }: { member: Member }) {
+  const isVacantSeat = !member.fullName.trim();
+  const displayName = isVacantSeat ? "Vacant Seat" : member.fullName;
+  const displayPartyLabel = isVacantSeat ? "Vacant" : member.partyName;
+  const initials = isVacantSeat ? member.stateCode : `${member.firstName[0] ?? ""}${member.lastName[0] ?? ""}`;
+
   return (
     <Link
       href={`/members/${member.slug}`}
@@ -135,18 +140,17 @@ function MemberListItem({ member }: { member: Member }) {
     >
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(248,250,253,1),rgba(232,238,247,1))] text-base font-semibold text-[var(--navy)]">
-          {member.firstName[0]}
-          {member.lastName[0]}
+          {initials}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[1.05rem] font-medium text-[var(--ink)]">{member.fullName}</p>
+          <p className="truncate text-[1.05rem] font-medium text-[var(--ink)]">{displayName}</p>
           <p className="mt-1 text-sm text-[var(--muted)]">{buildMemberSubtitle(member)}</p>
           <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-4">
-        <span className={`rounded-full px-3 py-1 text-sm font-medium ${getPartyTone(member.partyCode)}`}>
-          {member.partyName}
+        <span className={`rounded-full px-3 py-1 text-sm font-medium ${isVacantSeat ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]" : getPartyTone(member.partyCode)}`}>
+          {displayPartyLabel}
         </span>
         <span className="text-[1.2rem] text-[var(--muted)]" aria-hidden="true">
           ›

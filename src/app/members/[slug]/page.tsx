@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 
 import { formatDisplayDate, formatPercent, getMemberPageData } from "@/lib/congress-data";
 
-function getPartyClasses(partyCode: "D" | "R" | "I") {
+function getPartyClasses(partyCode: "D" | "R" | "I", isVacantSeat = false) {
+  if (isVacantSeat) {
+    return "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]";
+  }
+
   if (partyCode === "R") {
     return "bg-[rgba(176,48,53,0.1)] text-[var(--accent-red)]";
   }
@@ -87,7 +91,12 @@ export default async function MemberPage({
   const totalVotes = data.totalRecentVotes;
   const participationRate = data.participationRate ?? 0;
   const missedVoteRate = totalVotes > 0 ? (data.missedVotes / totalVotes) * 100 : 0;
-  const memberInitials = `${data.member.firstName[0] ?? ""}${data.member.lastName[0] ?? ""}`;
+  const isVacantSeat = !data.member.fullName.trim();
+  const displayName = isVacantSeat ? "Vacant Seat" : data.member.fullName;
+  const displayPartyLabel = isVacantSeat ? "Vacant" : data.member.partyName;
+  const memberInitials = isVacantSeat
+    ? data.member.stateCode
+    : `${data.member.firstName[0] ?? ""}${data.member.lastName[0] ?? ""}`;
   const districtDescriptor =
     data.member.chamber === "house"
       ? `${data.member.stateName}${data.member.districtLabel ? ` - ${data.member.districtLabel}` : ""}`
@@ -106,13 +115,13 @@ export default async function MemberPage({
           {data.member.chamber === "house" ? "House" : "Senate"}
         </Link>
         <span>›</span>
-        <span className="text-[var(--ink)]">{data.member.fullName}</span>
+        <span className="text-[var(--ink)]">{displayName}</span>
       </nav>
 
       <div className="mt-5 flex items-start justify-between gap-4">
         <div>
           <p className="text-[0.78rem] uppercase tracking-[0.22em] text-[var(--muted)]">Member Profile</p>
-          <h1 className="mt-2 font-serif text-4xl text-[var(--ink)] sm:text-5xl">{data.member.fullName}</h1>
+          <h1 className="mt-2 font-serif text-4xl text-[var(--ink)] sm:text-5xl">{displayName}</h1>
         </div>
         <div className="hidden text-sm text-[var(--muted)] lg:block">
           <a
@@ -136,7 +145,7 @@ export default async function MemberPage({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={data.imageUrl}
-                      alt={`Official portrait of ${data.member.fullName}`}
+                      alt={`Official portrait of ${displayName}`}
                       className="h-64 w-full object-cover"
                     />
                   </>
@@ -148,9 +157,9 @@ export default async function MemberPage({
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-3">
-                <h2 className="font-serif text-3xl leading-tight text-[var(--ink)]">{data.member.fullName}</h2>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${getPartyClasses(data.member.partyCode)}`}>
-                  {data.member.partyName}
+                <h2 className="font-serif text-3xl leading-tight text-[var(--ink)]">{displayName}</h2>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${getPartyClasses(data.member.partyCode, isVacantSeat)}`}>
+                  {displayPartyLabel}
                 </span>
               </div>
 
