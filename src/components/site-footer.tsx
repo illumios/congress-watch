@@ -23,6 +23,10 @@ export function SiteFooter() {
         <p className="max-w-3xl text-[12px] leading-5 text-[var(--muted)]">
           Congress.Watch is a public-interest civic interface built around official-source-first congressional data.
         </p>
+
+        <p className="text-[12px] leading-5 text-[var(--muted)]">
+          Built by Steven Sposato, Illumios LLC.
+        </p>
       </div>
     </footer>
   );

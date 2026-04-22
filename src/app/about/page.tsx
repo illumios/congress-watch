@@ -12,6 +12,7 @@ export default function AboutPage() {
         <p>The site is organized around current members of Congress, official roll-call votes, sponsored bills, and public-source transparency.</p>
         <p>Its purpose is not to tell users what to think. Its purpose is to make it easier to see what elected lawmakers have done.</p>
         <p>The design direction is intentionally editorial and public-service-oriented rather than partisan or campaign-driven.</p>
+        <p>Congress.Watch was built by Steven Sposato through Illumios LLC as an independent public-interest product.</p>
       </div>
     </main>
   );
