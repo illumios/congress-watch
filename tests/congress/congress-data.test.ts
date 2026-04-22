@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { parseSenateRosterXml } from "@/lib/congress-data";
+import { parseSenateRosterXml, parseSenateVoteXml } from "@/lib/congress-data";
 
 describe("congress-data senate parsing", () => {
   test("parses the live senate feed root shape", () => {
@@ -49,5 +49,51 @@ describe("congress-data senate parsing", () => {
       officialWebsiteUrl: "https://www.gallego.senate.gov/",
     });
     expect(members[0]?.committees[0]?.name).toBe("Committee on Veterans' Affairs");
+  });
+
+  test("parses senate roll call counts into yea and nay columns", () => {
+    const voteXml = `
+      <roll_call_vote>
+        <congress>119</congress>
+        <session>2</session>
+        <congress_year>2026</congress_year>
+        <vote_number>87</vote_number>
+        <vote_date>April 21, 2026, 04:09 PM</vote_date>
+        <vote_question_text>On the Motion to Proceed S.Con.Res. 33</vote_question_text>
+        <vote_result_text>Motion to Proceed Agreed to (52-46)</vote_result_text>
+        <question>On the Motion to Proceed</question>
+        <vote_title>Motion to Proceed to S.Con.Res. 33</vote_title>
+        <vote_result>Motion to Proceed Agreed to</vote_result>
+        <document>
+          <document_type>S.Con.Res.</document_type>
+          <document_number>33</document_number>
+        </document>
+        <count>
+          <yeas>52</yeas>
+          <nays>46</nays>
+          <present>0</present>
+          <absent>2</absent>
+        </count>
+        <members>
+          <member>
+            <member_full>Example Senator (R-TX)</member_full>
+            <party>R</party>
+            <state>TX</state>
+            <vote_cast>Yea</vote_cast>
+            <lis_member_id>S999</lis_member_id>
+          </member>
+        </members>
+      </roll_call_vote>
+    `;
+
+    const vote = parseSenateVoteXml(
+      voteXml,
+      "https://www.senate.gov/legislative/LIS/roll_call_votes/vote1192/vote_119_2_00087.xml",
+    );
+
+    expect(vote.yeaCount).toBe(52);
+    expect(vote.nayCount).toBe(46);
+    expect(vote.notVotingCount).toBe(2);
+    expect(vote.result).toBe("Motion to Proceed Agreed to");
   });
 });
