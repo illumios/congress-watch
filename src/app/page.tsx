@@ -34,18 +34,20 @@ function StatCard({
   value,
   detail,
   icon,
+  className,
 }: {
   label: string;
   value: string;
   detail: string;
   icon: string;
+  className?: string;
 }) {
   return (
-    <article className="rounded-[1.1rem] border border-[var(--border)] bg-white px-4 py-4 shadow-[0_8px_22px_rgba(12,33,58,0.05)]">
+    <article className={`rounded-[1.1rem] border border-[var(--border)] bg-white px-4 py-4 shadow-[0_8px_22px_rgba(12,33,58,0.05)] ${className ?? ""}`}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs text-[var(--muted)]">{label}</p>
-          <p className="mt-2 font-serif text-[2rem] leading-none text-[var(--ink)]">{value}</p>
+          <p className="mt-2 font-serif text-[1.8rem] leading-none text-[var(--ink)] sm:text-[2rem]">{value}</p>
           <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{detail}</p>
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface)] text-xl text-[var(--navy)]">
@@ -122,6 +124,32 @@ function VoteTableRow({ vote }: { vote: Vote }) {
   );
 }
 
+function MobileVoteCard({ vote }: { vote: Vote }) {
+  return (
+    <article className="rounded-[1rem] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">{formatLongDate(vote.timestamp)}</p>
+          <Link
+            href={`/votes/${vote.chamber}/${vote.congress}/${vote.session}/${vote.rollCallNumber}`}
+            className="mt-2 block text-[1rem] font-semibold leading-6 text-[var(--ink)]"
+          >
+            {vote.title}
+          </Link>
+        </div>
+        <span className="rounded-full bg-white px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
+          {vote.result}
+        </span>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{vote.question}</p>
+      <div className="mt-4 flex items-center gap-4 text-sm">
+        <span className="text-[var(--accent-blue)]">Yea {vote.yeaCount ?? "—"}</span>
+        <span className="text-[var(--accent-red)]">Nay {vote.nayCount ?? "—"}</span>
+      </div>
+    </article>
+  );
+}
+
 export default async function HomePage() {
   const [overview, states, votes, bills, members] = await Promise.all([
     getSiteOverview(),
@@ -160,19 +188,19 @@ export default async function HomePage() {
   );
 
   return (
-    <main className="mx-auto w-full max-w-[1280px] px-5 pb-14 pt-8 lg:px-8">
+    <main className="mx-auto w-full max-w-[1280px] px-4 pb-14 pt-4 sm:px-5 sm:pt-6 md:pt-8 lg:px-8">
       <section className="overflow-hidden rounded-[1.7rem] border border-[var(--border)] bg-white shadow-[0_18px_48px_rgba(15,35,58,0.08)]">
         <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="relative z-10 px-8 py-10 lg:px-10 lg:py-12">
-            <h1 className="max-w-[12ch] font-serif text-[3.4rem] leading-[0.96] tracking-[-0.03em] text-[var(--navy)] lg:text-[4.1rem]">
+          <div className="order-2 relative z-10 px-6 py-7 sm:px-8 sm:py-8 lg:order-1 lg:px-10 lg:py-12">
+            <h1 className="max-w-[8ch] font-serif text-[3rem] leading-[0.96] tracking-[-0.04em] text-[var(--navy)] sm:max-w-[9ch] sm:text-[3.4rem] lg:max-w-[12ch] lg:text-[4.1rem]">
               Congress deserves the same scrutiny as the presidency
             </h1>
-            <div className="mt-6 h-[2px] w-16 bg-[var(--accent-red)]" />
-            <p className="mt-6 max-w-[28rem] text-[1.05rem] leading-8 text-[var(--muted)]">
+            <div className="mt-5 h-[2px] w-16 bg-[var(--accent-red)]" />
+            <p className="mt-5 max-w-[28rem] text-[1rem] leading-7 text-[var(--muted)] sm:text-[1.05rem] sm:leading-8">
               Nonpartisan data on the people, votes, and legislation shaping our laws.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-5">
-              <Link href="/house" className="button-primary px-5 py-3 text-sm font-semibold">
+            <div className="mt-7 flex flex-wrap items-center gap-4 sm:gap-5">
+              <Link href="/house" className="button-primary min-h-12 px-5 py-3 text-sm font-semibold">
                 Browse current members
               </Link>
               <Link href="/states" className="text-sm font-semibold text-[var(--accent-blue)]">
@@ -183,25 +211,27 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative min-h-[300px] overflow-hidden bg-[linear-gradient(180deg,rgba(236,243,250,0.85),rgba(247,244,238,0.3))]">
-            <div className="absolute inset-y-0 left-0 z-10 w-28 bg-gradient-to-r from-white via-white/75 to-transparent" />
+          <div className="order-1 relative min-h-[240px] overflow-hidden bg-[linear-gradient(180deg,rgba(236,243,250,0.85),rgba(247,244,238,0.3))] sm:min-h-[300px] lg:order-2">
+            <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-white via-white/80 to-transparent lg:inset-y-0 lg:left-0 lg:h-auto lg:w-28 lg:bg-gradient-to-r" />
             <Image
               src="/reference-assets/capitol-west-front.jpg"
               alt="United States Capitol west front"
               fill
               priority
               className="object-cover object-center"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 60vw"
             />
           </div>
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-5">
+      <section className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
         <StatCard
           label="Current Congress"
           value={`${formatCongressOrdinal(overview.currentCongress)} Congress`}
           detail="Jan 3, 2025 – Jan 3, 2027"
           icon="◌"
+          className="col-span-2 lg:col-span-1"
         />
         <StatCard
           label="Total Members"
@@ -263,7 +293,7 @@ export default async function HomePage() {
               <div className="flex flex-1 items-center rounded-[1rem] bg-[var(--surface)] px-3 py-3">
                 <HomeStateMap stateMajorities={majorityByState} states={states} />
               </div>
-              <div className="mt-3 flex items-center justify-between gap-3 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
+              <div className="mt-3 grid gap-1 text-[0.7rem] uppercase tracking-[0.14em] text-[var(--muted)] sm:flex sm:items-center sm:justify-between sm:gap-3 sm:text-xs">
                 <span>Blue: Democratic majority</span>
                 <span>Red: Republican majority</span>
                 <span>Gray: Split or independent</span>
@@ -283,7 +313,12 @@ export default async function HomePage() {
                 View all votes →
               </Link>
             </div>
-            <div className="min-h-0 flex-1 overflow-auto">
+            <div className="grid gap-3 px-4 py-4 md:hidden">
+              {votes.map((vote) => (
+                <MobileVoteCard key={vote.slug} vote={vote} />
+              ))}
+            </div>
+            <div className="hidden min-h-0 flex-1 overflow-auto md:block">
               <table className="min-w-full border-collapse">
                 <thead>
                   <tr className="text-left">
@@ -320,26 +355,26 @@ export default async function HomePage() {
             type="search"
             name="q"
             placeholder="Search by name..."
-            className="rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent-blue)]"
+            className="min-h-12 rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent-blue)]"
           />
-          <select className="rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--muted)] outline-none">
+          <select className="min-h-12 rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--muted)] outline-none">
             <option>All States</option>
             {states.map((state) => (
               <option key={state.code}>{state.name}</option>
             ))}
           </select>
-          <select className="rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--muted)] outline-none">
+          <select className="min-h-12 rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--muted)] outline-none">
             <option>All Chambers</option>
             <option>House</option>
             <option>Senate</option>
           </select>
-          <select className="rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--muted)] outline-none">
+          <select className="min-h-12 rounded-[0.9rem] border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--muted)] outline-none">
             <option>All Parties</option>
             <option>Democrat</option>
             <option>Republican</option>
             <option>Independent</option>
           </select>
-          <button className="button-primary px-5 py-3 text-sm font-semibold">Search</button>
+          <button className="button-primary min-h-12 px-5 py-3 text-sm font-semibold">Search</button>
         </form>
       </section>
     </main>

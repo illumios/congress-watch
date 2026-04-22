@@ -3,7 +3,7 @@ import Link from "next/link";
 export function SiteFooter() {
   return (
     <footer className="border-t border-[color:var(--border)] bg-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-3 px-5 py-8 text-center text-sm text-[var(--muted)] lg:px-8">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-3 px-5 py-8 pb-28 text-center text-sm text-[var(--muted)] lg:px-8 lg:pb-8">
         <p className="text-[13px] text-[var(--muted)]">All data is sourced from official congressional records.</p>
 
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] font-medium text-[var(--accent-blue)]">
