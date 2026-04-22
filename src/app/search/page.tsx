@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { MemberAvatar } from "@/components/member-avatar";
 import { PageIntro } from "@/components/page-intro";
 import { searchSite } from "@/lib/congress-data";
 
@@ -41,9 +42,19 @@ export default async function SearchPage({
                 results.members.slice(0, 30).map((member) => (
                   <article key={member.bioguideId} className="rounded-[1rem] border border-[var(--border)] px-4 py-4 transition hover:border-[var(--accent-blue)]">
                     <div className="flex items-start justify-between gap-3">
-                      <Link href={`/members/${member.slug}`} className="font-semibold text-[var(--ink)] transition hover:text-[var(--accent-blue)]">
-                        {member.fullName}
-                      </Link>
+                      <div className="flex min-w-0 items-start gap-3">
+                        <MemberAvatar
+                          member={member}
+                          className="h-12 w-12 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)]"
+                          initialsClassName="text-sm font-semibold"
+                        />
+                        <div className="min-w-0">
+                          <Link href={`/members/${member.slug}`} className="font-semibold text-[var(--ink)] transition hover:text-[var(--accent-blue)]">
+                            {member.fullName}
+                          </Link>
+                          <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
+                        </div>
+                      </div>
                       {member.wikipediaUrl ? (
                         <a
                           href={member.wikipediaUrl}
@@ -55,7 +66,6 @@ export default async function SearchPage({
                         </a>
                       ) : null}
                     </div>
-                    <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
                   </article>
                 ))
               ) : (

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { parseSenateRosterXml, parseSenateVoteXml } from "@/lib/congress-data";
+import { parseSenateRosterXml, parseSenateVoteXml, pickBestWikipediaTitle } from "@/lib/congress-data";
 
 describe("congress-data senate parsing", () => {
   test("parses the live senate feed root shape", () => {
@@ -95,5 +95,25 @@ describe("congress-data senate parsing", () => {
     expect(vote.nayCount).toBe(46);
     expect(vote.notVotingCount).toBe(2);
     expect(vote.result).toBe("Motion to Proceed Agreed to");
+  });
+
+  test("prefers exact wikipedia titles before broader politician matches", () => {
+    const selected = pickBestWikipediaTitle("Jamie Raskin", [
+      "Raskin",
+      "Jamie Raskin",
+      "Jamie Raskin (politician)",
+    ]);
+
+    expect(selected).toBe("Jamie Raskin");
+  });
+
+  test("falls back to politician disambiguation titles when exact title is missing", () => {
+    const selected = pickBestWikipediaTitle("John James", [
+      "John James (politician)",
+      "John James (baseball)",
+      "Jonathan James",
+    ]);
+
+    expect(selected).toBe("John James (politician)");
   });
 });

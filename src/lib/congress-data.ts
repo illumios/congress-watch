@@ -16,6 +16,7 @@ export type Member = {
   bioguideId: string;
   slug: string;
   wikipediaUrl: string | null;
+  portraitUrl: string | null;
   firstName: string;
   lastName: string;
   fullName: string;
@@ -118,6 +119,7 @@ const XML = new XMLParser({
 const DAY = 60 * 60 * 24;
 const HOUR = 60 * 60;
 const SIX_HOURS = HOUR * 6;
+const THIRTY_DAYS = DAY * 30;
 const CONGRESS_API_KEY = process.env.CONGRESS_API_KEY ?? "DEMO_KEY";
 
 const STATE_NAMES: Record<string, string> = {
@@ -199,6 +201,55 @@ function buildWikipediaUrl(fullName: string) {
   const normalized = fullName.trim();
   if (!normalized) return null;
   return `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(normalized)}`;
+}
+
+function buildMemberPortraitUrl(bioguideId: string) {
+  const normalized = bioguideId.trim();
+  if (!normalized) return null;
+  return `/api/member-portrait/${normalized}`;
+}
+
+function normalizeWikipediaTitle(value: string) {
+  return value.trim().replace(/_/g, " ").replace(/\s+/g, " ").toLowerCase();
+}
+
+function buildWikipediaSearchQuery(fullName: string, chamber: Chamber, stateName: string) {
+  const role = chamber === "house" ? "U.S. representative" : "U.S. senator";
+  return `"${fullName}" ${stateName} ${role}`;
+}
+
+export function pickBestWikipediaTitle(
+  fullName: string,
+  titles: string[],
+) {
+  const normalizedFullName = normalizeWikipediaTitle(fullName);
+
+  const ranked = titles
+    .map((title) => {
+      const normalizedTitle = normalizeWikipediaTitle(title);
+      let score = 0;
+
+      if (normalizedTitle === normalizedFullName) {
+        score += 200;
+      }
+
+      if (normalizedTitle.startsWith(`${normalizedFullName} (`)) {
+        score += 90;
+      }
+
+      if (normalizedTitle.includes(normalizedFullName)) {
+        score += 40;
+      }
+
+      if (/\(politician\)|\(u\.s\.\srepresentative\)|\(senator\)/i.test(title)) {
+        score += 15;
+      }
+
+      return { title, score };
+    })
+    .sort((left, right) => right.score - left.score);
+
+  return ranked[0]?.score ? ranked[0].title : null;
 }
 
 function partyNameFromCode(code: string): string {
@@ -296,6 +347,24 @@ async function fetchJson<T>(url: string, revalidate: number) {
   }
 
   return (await response.json()) as T;
+}
+
+async function fetchWikipediaThumbnailForTitle(title: string) {
+  const payload = await fetchJson<{
+    query?: {
+      pages?: Array<{
+        title?: string;
+        thumbnail?: {
+          source?: string;
+        };
+      }>;
+    };
+  }>(
+    `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&titles=${encodeURIComponent(title)}&redirects=1&pithumbsize=480&format=json&formatversion=2`,
+    THIRTY_DAYS,
+  );
+
+  return payload.query?.pages?.find((page) => page.thumbnail?.source)?.thumbnail?.source ?? null;
 }
 
 export function parseHouseVoteIndexHtml(html: string, year: number) {
@@ -464,6 +533,7 @@ export function parseHouseRosterXml(xml: string) {
         bioguideId,
         slug: buildMemberSlug(fullName, stateCode, "house", district),
         wikipediaUrl: buildWikipediaUrl(fullName),
+        portraitUrl: buildMemberPortraitUrl(bioguideId),
         firstName: String(memberInfo.firstname ?? "").trim(),
         lastName: String(memberInfo.lastname ?? "").trim(),
         fullName,
@@ -523,6 +593,7 @@ export function parseSenateRosterXml(cvcXml: string, contactsXml: string, curren
         bioguideId,
         slug: buildMemberSlug(fullName, stateCode, "senate", null),
         wikipediaUrl: buildWikipediaUrl(fullName),
+        portraitUrl: buildMemberPortraitUrl(bioguideId),
         firstName: String(senator.name?.first ?? "").trim(),
         lastName: String(senator.name?.last ?? "").trim(),
         fullName,
@@ -766,6 +837,51 @@ const getMemberApiDetail = unstable_cache(
   ["member-api-detail"],
   { revalidate: DAY },
 );
+
+const getMemberPortraitSourceCached = unstable_cache(
+  async (bioguideId: string, fullName: string, chamber: Chamber, stateName: string) => {
+    const directThumbnail = await fetchWikipediaThumbnailForTitle(fullName).catch(() => null);
+    if (directThumbnail) {
+      return directThumbnail;
+    }
+
+    const searchPayload = await fetchJson<{
+      query?: {
+        search?: Array<{
+          title?: string;
+        }>;
+      };
+    }>(
+      `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(buildWikipediaSearchQuery(fullName, chamber, stateName))}&srlimit=6&format=json&formatversion=2`,
+      THIRTY_DAYS,
+    ).catch(() => null);
+
+    const bestSearchTitle = pickBestWikipediaTitle(
+      fullName,
+      searchPayload?.query?.search?.map((result) => String(result.title ?? "").trim()).filter(Boolean) ?? [],
+    );
+
+    if (bestSearchTitle) {
+      const searchedThumbnail = await fetchWikipediaThumbnailForTitle(bestSearchTitle).catch(() => null);
+      if (searchedThumbnail) {
+        return searchedThumbnail;
+      }
+    }
+
+    const officialFallback = await getMemberApiDetail(bioguideId).catch(() => null);
+    return officialFallback?.member.depiction?.imageUrl ?? null;
+  },
+  ["member-portrait-source"],
+  { revalidate: THIRTY_DAYS },
+);
+
+export async function getMemberPortraitSource(member: Pick<Member, "bioguideId" | "fullName" | "chamber" | "stateName">) {
+  if (!member.bioguideId.trim() || !member.fullName.trim()) {
+    return null;
+  }
+
+  return getMemberPortraitSourceCached(member.bioguideId, member.fullName, member.chamber, member.stateName);
+}
 
 export async function getAllMembers(): Promise<Member[]> {
   const house = await getHouseRoster();

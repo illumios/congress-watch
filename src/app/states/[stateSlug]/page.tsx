@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { MemberAvatar } from "@/components/member-avatar";
 import { getStateOverview, type Member, type Vote } from "@/lib/congress-data";
 
 const VIEW_OPTIONS = [
@@ -131,15 +132,15 @@ function MemberListItem({ member }: { member: Member }) {
   const isVacantSeat = !member.fullName.trim();
   const displayName = isVacantSeat ? "Vacant Seat" : member.fullName;
   const displayPartyLabel = isVacantSeat ? "Vacant" : member.partyName;
-  const initials = isVacantSeat ? member.stateCode : `${member.firstName[0] ?? ""}${member.lastName[0] ?? ""}`;
 
   return (
     <article className="rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(248,250,253,1),rgba(232,238,247,1))] text-base font-semibold text-[var(--navy)]">
-          {initials}
-        </div>
+        <MemberAvatar
+          member={member}
+          className="h-14 w-14 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)]"
+        />
         <div className="min-w-0">
           {member.wikipediaUrl ? (
             <a

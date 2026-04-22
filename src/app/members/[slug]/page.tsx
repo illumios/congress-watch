@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { MemberAvatar } from "@/components/member-avatar";
 import { formatDisplayDate, formatPercent, getMemberPageData } from "@/lib/congress-data";
 
 function getPartyClasses(partyCode: "D" | "R" | "I", isVacantSeat = false) {
@@ -119,9 +120,6 @@ export default async function MemberPage({
   const isVacantSeat = !data.member.fullName.trim();
   const displayName = isVacantSeat ? "Vacant Seat" : data.member.fullName;
   const displayPartyLabel = isVacantSeat ? "Vacant" : data.member.partyName;
-  const memberInitials = isVacantSeat
-    ? data.member.stateCode
-    : `${data.member.firstName[0] ?? ""}${data.member.lastName[0] ?? ""}`;
   const districtDescriptor =
     data.member.chamber === "house"
       ? `${data.member.stateName}${data.member.districtLabel ? ` - ${data.member.districtLabel}` : ""}`
@@ -176,20 +174,12 @@ export default async function MemberPage({
         <article className="rounded-[1.5rem] border border-[rgba(19,52,92,0.12)] bg-white p-5 shadow-[0_18px_50px_rgba(12,33,58,0.055)] sm:p-6">
           <div className="flex flex-col gap-6 md:flex-row">
             <div className="w-full max-w-[10rem] shrink-0">
-              <div className="overflow-hidden rounded-[1rem] border border-[rgba(19,52,92,0.12)] bg-[linear-gradient(180deg,#eef3f9,#dbe6f4)]">
-                {data.imageUrl ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={data.imageUrl}
-                      alt={`Official portrait of ${displayName}`}
-                      className="h-64 w-full object-cover"
-                    />
-                  </>
-                ) : (
-                  <div className="flex h-64 items-center justify-center font-serif text-5xl text-[var(--navy)]">{memberInitials}</div>
-                )}
-              </div>
+              <MemberAvatar
+                member={data.member}
+                className="h-64 w-full rounded-[1rem] border border-[rgba(19,52,92,0.12)]"
+                imageClassName="h-full w-full object-cover"
+                initialsClassName="font-serif text-5xl"
+              />
             </div>
 
             <div className="min-w-0 flex-1">

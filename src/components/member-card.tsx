@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { MemberAvatar } from "@/components/member-avatar";
 import { formatDisplayDate, type Member } from "@/lib/congress-data";
 
 export function MemberCard({ member }: { member: Member }) {
@@ -10,35 +11,41 @@ export function MemberCard({ member }: { member: Member }) {
   return (
     <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-4 shadow-[0_16px_40px_rgba(12,33,58,0.06)] sm:p-5">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">
-            {member.chamber === "house" ? "House" : "Senate"}
-          </p>
-          {member.wikipediaUrl ? (
-            <a
-              href={member.wikipediaUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-block font-serif text-[1.85rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:text-2xl"
-            >
-              {displayName}
-            </a>
-          ) : (
-            <h3 className="mt-2 font-serif text-[1.85rem] leading-tight text-[var(--ink)] sm:text-2xl">{displayName}</h3>
-          )}
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{member.roleLabel}</p>
-          {member.wikipediaUrl ? (
-            <p className="mt-2">
+        <div className="flex min-w-0 items-start gap-4">
+          <MemberAvatar
+            member={member}
+            className="h-16 w-16 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)]"
+          />
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">
+              {member.chamber === "house" ? "House" : "Senate"}
+            </p>
+            {member.wikipediaUrl ? (
               <a
                 href={member.wikipediaUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm font-medium text-[var(--accent-blue)]"
+                className="mt-2 inline-block font-serif text-[1.85rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:text-2xl"
               >
-                Wikipedia ↗
+                {displayName}
               </a>
-            </p>
-          ) : null}
+            ) : (
+              <h3 className="mt-2 font-serif text-[1.85rem] leading-tight text-[var(--ink)] sm:text-2xl">{displayName}</h3>
+            )}
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{member.roleLabel}</p>
+            {member.wikipediaUrl ? (
+              <p className="mt-2">
+                <a
+                  href={member.wikipediaUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-[var(--accent-blue)]"
+                >
+                  Wikipedia ↗
+                </a>
+              </p>
+            ) : null}
+          </div>
         </div>
         <span
           className={`rounded-full px-3 py-1 text-xs font-medium ${
