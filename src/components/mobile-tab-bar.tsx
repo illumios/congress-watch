@@ -30,10 +30,10 @@ export function MobileTabBar() {
               key={item.href}
               href={item.href}
               className={`rounded-[1rem] px-2 py-2 text-center text-[0.72rem] font-semibold tracking-[0.02em] transition-colors ${
-                active ? "bg-[var(--navy)] text-white shadow-[0_10px_18px_rgba(15,45,76,0.16)]" : "text-[var(--muted)]"
+                active ? "bg-[var(--navy)] shadow-[0_10px_18px_rgba(15,45,76,0.16)]" : "text-[var(--muted)]"
               }`}
             >
-              {item.label}
+              <span className={active ? "text-white" : "text-[var(--muted)]"}>{item.label}</span>
             </Link>
           );
         })}
