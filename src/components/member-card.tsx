@@ -9,7 +9,7 @@ export function MemberCard({ member }: { member: Member }) {
   const displayPartyLabel = isVacantSeat ? "Vacant" : member.partyName;
 
   return (
-    <article className="min-w-0 rounded-[1.35rem] border border-[var(--border)] bg-white p-4 shadow-[0_16px_40px_rgba(12,33,58,0.06)] sm:rounded-[1.5rem] sm:p-5">
+    <article className="w-full min-w-0 max-w-full overflow-hidden rounded-[1.35rem] border border-[var(--border)] bg-white p-4 shadow-[0_16px_40px_rgba(12,33,58,0.06)] sm:rounded-[1.5rem] sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <MemberAvatar
@@ -83,7 +83,7 @@ export function MemberCard({ member }: { member: Member }) {
       </div>
       <Link
         href={`/members/${member.slug}`}
-        className="button-primary mt-5 w-full px-4 py-2 text-sm font-medium sm:mt-6 sm:w-auto"
+        className="button-primary mt-5 w-full max-w-full px-4 py-2 text-sm font-medium sm:mt-6 sm:w-auto"
       >
         View profile
       </Link>

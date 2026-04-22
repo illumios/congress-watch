@@ -305,20 +305,20 @@ export default async function StateDetailPage({
           </section>
         </>
       ) : activeView === "all" ? (
-        <section className="mt-5 grid gap-5 xl:grid-cols-[1.06fr_0.94fr]">
-          <article className="space-y-5">
-            <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+        <section className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[1.06fr_0.94fr]">
+          <article className="min-w-0 space-y-5">
+            <section className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="House Members" count={houseMembers.length} href={buildStateViewHref(data.slug, "house")} />
-              <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="mt-5 grid min-w-0 gap-5 lg:grid-cols-2">
                 {houseMembers.map((member) => (
                   <MemberCard key={member.bioguideId} member={member} />
                 ))}
               </div>
             </section>
 
-            <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+            <section className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="Senators" count={senateMembers.length} href={buildStateViewHref(data.slug, "senate")} />
-              <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="mt-5 grid min-w-0 gap-5 lg:grid-cols-2">
                 {senateMembers.map((member) => (
                   <MemberCard key={member.bioguideId} member={member} />
                 ))}
@@ -326,7 +326,7 @@ export default async function StateDetailPage({
             </section>
           </article>
 
-          <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+          <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
             <SectionHeader title="Recent Votes" count={data.relatedVotes.length} />
             <div className="mt-5 space-y-3">
               {data.relatedVotes.length > 0 ? (
@@ -340,21 +340,21 @@ export default async function StateDetailPage({
           </article>
         </section>
       ) : (
-        <section className="mt-5 grid gap-5 xl:grid-cols-[1.08fr_0.92fr]">
-          <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+        <section className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[1.08fr_0.92fr]">
+          <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
             <SectionHeader
               title={activeView === "house" ? "House Members" : "Senators"}
               count={visibleMembers.length}
             />
-            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="mt-5 grid min-w-0 gap-5 lg:grid-cols-2">
               {visibleMembers.map((member) => (
                 <MemberCard key={member.bioguideId} member={member} />
               ))}
             </div>
           </article>
 
-          <aside className="space-y-5">
-            <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+          <aside className="min-w-0 space-y-5">
+            <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="Recent Votes" count={data.relatedVotes.length} />
               <div className="mt-5 space-y-3">
                 {data.relatedVotes.length > 0 ? (
@@ -367,7 +367,7 @@ export default async function StateDetailPage({
               </div>
             </article>
 
-            <article className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(247,250,254,1),rgba(238,244,251,0.92))] p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+            <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(247,250,254,1),rgba(238,244,251,0.92))] p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">Delegation Snapshot</p>
               <p className="mt-3 text-sm leading-7 text-[var(--ink)]">
                 {data.state} currently has {houseMembers.length} House members and {senateMembers.length} senators in active service.
