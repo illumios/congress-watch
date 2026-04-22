@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { HomeStateMap } from "@/components/home-state-map";
+import { StateJumpSelect } from "@/components/state-jump-select";
 import { getAllMembers, getBills, getRecentVotes, getSiteOverview, getStates, type Vote } from "@/lib/congress-data";
 
 function formatCompactNumber(value: number) {
@@ -140,6 +142,22 @@ export default async function HomePage() {
   const senateDemocrats = senateDelegation.filter((member) => member.partyCode === "D").length;
   const senateRepublicans = senateDelegation.filter((member) => member.partyCode === "R").length;
   const senateOthers = Math.max(senateDelegation.length - senateDemocrats - senateRepublicans, 0);
+  const stateMajorities = members.reduce<Record<string, { D: number; R: number; I: number }>>((accumulator, member) => {
+    const bucket = accumulator[member.stateCode] ?? { D: 0, R: 0, I: 0 };
+    if (member.partyCode === "D") bucket.D += 1;
+    else if (member.partyCode === "R") bucket.R += 1;
+    else bucket.I += 1;
+    accumulator[member.stateCode] = bucket;
+    return accumulator;
+  }, {});
+  const majorityByState: Record<string, "D" | "R" | "I" | "T"> = Object.fromEntries(
+    Object.entries(stateMajorities).map(([stateCode, counts]) => {
+      if (counts.D > counts.R && counts.D > counts.I) return [stateCode, "D"];
+      if (counts.R > counts.D && counts.R > counts.I) return [stateCode, "R"];
+      if (counts.I > counts.D && counts.I > counts.R) return [stateCode, "I"];
+      return [stateCode, "T"];
+    }),
+  );
 
   return (
     <main className="mx-auto w-full max-w-[1280px] px-5 pb-14 pt-8 lg:px-8">
@@ -212,77 +230,77 @@ export default async function HomePage() {
       </section>
 
       <section className="mt-4 grid gap-4 lg:grid-cols-[1.03fr_0.95fr_1.35fr]">
-        <div className="overflow-hidden rounded-[1.1rem] border border-[var(--border)] bg-white shadow-[0_10px_28px_rgba(15,35,58,0.05)]">
-          <div className="bg-[var(--navy)] px-5 py-4">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-white">Congress at a glance</h2>
-          </div>
-          <ChamberBreakdown
-            title="U.S. House of Representatives"
-            total={houseMembers}
-            democrats={houseDemocrats}
-            republicans={houseRepublicans}
-            others={houseOthers}
-            href="/house"
-          />
-          <ChamberBreakdown
-            title="U.S. Senate"
-            total={senateMembers}
-            democrats={senateDemocrats}
-            republicans={senateRepublicans}
-            others={senateOthers}
-            href="/senate"
-          />
-        </div>
-
-        <div className="overflow-hidden rounded-[1.1rem] border border-[var(--border)] bg-white shadow-[0_10px_28px_rgba(15,35,58,0.05)]">
-          <div className="border-b border-[var(--border)] px-5 py-4">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--navy)]">Browse by state</h2>
-          </div>
-          <div className="px-5 py-5">
-            <div className="rounded-[1rem] bg-[var(--surface)] px-3 py-3">
-              <Image
-                src="/reference-assets/us-map.svg"
-                alt="Map of the United States"
-                width={640}
-                height={396}
-                className="h-auto w-full opacity-80"
-              />
+        <div className="flex overflow-hidden rounded-[1.1rem] border border-[var(--border)] bg-white shadow-[0_10px_28px_rgba(15,35,58,0.05)] lg:h-[25.75rem]">
+          <div className="flex h-full w-full flex-col">
+            <div className="bg-[var(--navy)] px-5 py-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-white">Congress at a glance</h2>
             </div>
-            <form action="/states" className="mt-4">
-              <select className="w-full rounded-[0.85rem] border border-[var(--border)] bg-white px-3 py-2.5 text-sm text-[var(--muted)] outline-none">
-                <option>Select a state</option>
-                {states.map((state) => (
-                  <option key={state.code}>{state.name}</option>
-                ))}
-              </select>
-            </form>
+            <ChamberBreakdown
+              title="U.S. House of Representatives"
+              total={houseMembers}
+              democrats={houseDemocrats}
+              republicans={houseRepublicans}
+              others={houseOthers}
+              href="/house"
+            />
+            <ChamberBreakdown
+              title="U.S. Senate"
+              total={senateMembers}
+              democrats={senateDemocrats}
+              republicans={senateRepublicans}
+              others={senateOthers}
+              href="/senate"
+            />
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-[1.1rem] border border-[var(--border)] bg-white shadow-[0_10px_28px_rgba(15,35,58,0.05)]">
-          <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--navy)]">Recent roll call votes</h2>
-            <Link href="/votes" className="text-sm font-medium text-[var(--accent-blue)]">
-              View all votes →
-            </Link>
+        <div className="flex overflow-hidden rounded-[1.1rem] border border-[var(--border)] bg-white shadow-[0_10px_28px_rgba(15,35,58,0.05)] lg:h-[25.75rem]">
+          <div className="flex h-full w-full flex-col">
+            <div className="border-b border-[var(--border)] px-5 py-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--navy)]">Browse by state</h2>
+            </div>
+            <div className="flex flex-1 flex-col px-5 py-5">
+              <div className="flex flex-1 items-center rounded-[1rem] bg-[var(--surface)] px-3 py-3">
+                <HomeStateMap stateMajorities={majorityByState} />
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
+                <span>Blue: Democratic majority</span>
+                <span>Red: Republican majority</span>
+                <span>Gray: Split or independent</span>
+              </div>
+              <div className="mt-4">
+                <StateJumpSelect states={states} />
+              </div>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse">
-              <thead>
-                <tr className="text-left">
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Date</th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Vote</th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Yea</th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Nay</th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Result</th>
-                </tr>
-              </thead>
-              <tbody>
-                {votes.map((vote) => (
-                  <VoteTableRow key={vote.slug} vote={vote} />
-                ))}
-              </tbody>
-            </table>
+        </div>
+
+        <div className="flex overflow-hidden rounded-[1.1rem] border border-[var(--border)] bg-white shadow-[0_10px_28px_rgba(15,35,58,0.05)] lg:h-[25.75rem]">
+          <div className="flex h-full w-full flex-col">
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--navy)]">Recent roll call votes</h2>
+              <Link href="/votes" className="text-sm font-medium text-[var(--accent-blue)]">
+                View all votes →
+              </Link>
+            </div>
+            <div className="min-h-0 flex-1 overflow-auto">
+              <table className="min-w-full border-collapse">
+                <thead>
+                  <tr className="text-left">
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Date</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Vote</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Yea</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Nay</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-[var(--muted)]">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {votes.map((vote) => (
+                    <VoteTableRow key={vote.slug} vote={vote} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
