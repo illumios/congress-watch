@@ -261,7 +261,7 @@ export default async function HomePage() {
             </div>
             <div className="flex flex-1 flex-col px-5 py-5">
               <div className="flex flex-1 items-center rounded-[1rem] bg-[var(--surface)] px-3 py-3">
-                <HomeStateMap stateMajorities={majorityByState} />
+                <HomeStateMap stateMajorities={majorityByState} states={states} />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
                 <span>Blue: Democratic majority</span>
