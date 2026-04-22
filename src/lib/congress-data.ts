@@ -1,6 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { XMLParser } from "fast-xml-parser";
 
+import { seededLegislativeData } from "@/lib/congress/seed/legislative-seed";
+
 export type Chamber = "house" | "senate";
 export type PartyCode = "D" | "R" | "I";
 
@@ -864,7 +866,29 @@ export async function getStateOverview(stateSlug: string) {
 }
 
 export async function getBills(limit = 30) {
-  return getLatestBills(limit);
+  try {
+    return await getLatestBills(limit);
+  } catch {
+    return seededLegislativeData.bills
+      .slice()
+      .sort((left, right) => right.latestActionDate.localeCompare(left.latestActionDate))
+      .slice(0, limit)
+      .map((bill) => ({
+        congress: bill.congressNumber,
+        billType: toTitleBillType(bill.billType),
+        billNumber: bill.billNumber,
+        idLabel: `${bill.billType.toUpperCase()} ${bill.billNumber}`,
+        title: bill.shortTitle ?? bill.officialTitle,
+        policyArea: bill.policyArea ?? null,
+        introducedDate: bill.introducedDate,
+        latestActionDate: bill.latestActionDate,
+        latestActionText: bill.latestActionText,
+        originChamber: bill.originChamber === "house" ? "House" : "Senate",
+        sponsorName: null,
+        sponsorBioguideId: null,
+        sourceUrl: bill.congressUrl,
+      }));
+  }
 }
 
 export async function getBillDetail(congress: number, billType: string, billNumber: number) {
