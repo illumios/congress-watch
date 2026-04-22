@@ -14,8 +14,31 @@ export function MemberCard({ member }: { member: Member }) {
           <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">
             {member.chamber === "house" ? "House" : "Senate"}
           </p>
-          <h3 className="mt-2 font-serif text-[1.85rem] leading-tight text-[var(--ink)] sm:text-2xl">{displayName}</h3>
+          {member.wikipediaUrl ? (
+            <a
+              href={member.wikipediaUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-block font-serif text-[1.85rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:text-2xl"
+            >
+              {displayName}
+            </a>
+          ) : (
+            <h3 className="mt-2 font-serif text-[1.85rem] leading-tight text-[var(--ink)] sm:text-2xl">{displayName}</h3>
+          )}
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{member.roleLabel}</p>
+          {member.wikipediaUrl ? (
+            <p className="mt-2">
+              <a
+                href={member.wikipediaUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-medium text-[var(--accent-blue)]"
+              >
+                Wikipedia ↗
+              </a>
+            </p>
+          ) : null}
         </div>
         <span
           className={`rounded-full px-3 py-1 text-xs font-medium ${

@@ -15,6 +15,7 @@ export type CommitteeAssignment = {
 export type Member = {
   bioguideId: string;
   slug: string;
+  wikipediaUrl: string | null;
   firstName: string;
   lastName: string;
   fullName: string;
@@ -192,6 +193,12 @@ function stateCodeToSlug(code: string) {
 function buildMemberSlug(fullName: string, stateCode: string, chamber: Chamber, district: number | null) {
   const suffix = chamber === "house" ? `${stateCode.toLowerCase()}-${district === 0 ? "at-large" : district}` : stateCode.toLowerCase();
   return `${slugify(fullName)}-${suffix}`;
+}
+
+function buildWikipediaUrl(fullName: string) {
+  const normalized = fullName.trim();
+  if (!normalized) return null;
+  return `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(normalized)}`;
 }
 
 function partyNameFromCode(code: string): string {
@@ -455,6 +462,7 @@ export function parseHouseRosterXml(xml: string) {
       return {
         bioguideId,
         slug: buildMemberSlug(fullName, stateCode, "house", district),
+        wikipediaUrl: buildWikipediaUrl(fullName),
         firstName: String(memberInfo.firstname ?? "").trim(),
         lastName: String(memberInfo.lastname ?? "").trim(),
         fullName,
@@ -513,6 +521,7 @@ export function parseSenateRosterXml(cvcXml: string, contactsXml: string, curren
       return {
         bioguideId,
         slug: buildMemberSlug(fullName, stateCode, "senate", null),
+        wikipediaUrl: buildWikipediaUrl(fullName),
         firstName: String(senator.name?.first ?? "").trim(),
         lastName: String(senator.name?.last ?? "").trim(),
         fullName,

@@ -39,10 +39,24 @@ export default async function SearchPage({
             <div className="mt-5 space-y-3">
               {results.members.length > 0 ? (
                 results.members.slice(0, 30).map((member) => (
-                  <Link key={member.bioguideId} href={`/members/${member.slug}`} className="block rounded-[1rem] border border-[var(--border)] px-4 py-4 transition hover:border-[var(--accent-blue)]">
-                    <p className="font-semibold text-[var(--ink)]">{member.fullName}</p>
+                  <article key={member.bioguideId} className="rounded-[1rem] border border-[var(--border)] px-4 py-4 transition hover:border-[var(--accent-blue)]">
+                    <div className="flex items-start justify-between gap-3">
+                      <Link href={`/members/${member.slug}`} className="font-semibold text-[var(--ink)] transition hover:text-[var(--accent-blue)]">
+                        {member.fullName}
+                      </Link>
+                      {member.wikipediaUrl ? (
+                        <a
+                          href={member.wikipediaUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="shrink-0 text-sm font-medium text-[var(--accent-blue)]"
+                        >
+                          Wikipedia ↗
+                        </a>
+                      ) : null}
+                    </div>
                     <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
-                  </Link>
+                  </article>
                 ))
               ) : (
                 <p className="text-sm leading-7 text-[var(--muted)]">No matching members found.</p>

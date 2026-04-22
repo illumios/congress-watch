@@ -134,29 +134,51 @@ function MemberListItem({ member }: { member: Member }) {
   const initials = isVacantSeat ? member.stateCode : `${member.firstName[0] ?? ""}${member.lastName[0] ?? ""}`;
 
   return (
-    <Link
-      href={`/members/${member.slug}`}
-      className="flex flex-col gap-4 rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)] sm:flex-row sm:items-center sm:justify-between"
-    >
+    <article className="rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(248,250,253,1),rgba(232,238,247,1))] text-base font-semibold text-[var(--navy)]">
           {initials}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[1.05rem] font-medium text-[var(--ink)]">{displayName}</p>
+          {member.wikipediaUrl ? (
+            <a
+              href={member.wikipediaUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="truncate text-[1.05rem] font-medium text-[var(--ink)] transition hover:text-[var(--accent-blue)]"
+            >
+              {displayName}
+            </a>
+          ) : (
+            <p className="truncate text-[1.05rem] font-medium text-[var(--ink)]">{displayName}</p>
+          )}
           <p className="mt-1 text-sm text-[var(--muted)]">{buildMemberSubtitle(member)}</p>
           <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
+          {member.wikipediaUrl ? (
+            <p className="mt-2">
+              <a
+                href={member.wikipediaUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-medium text-[var(--accent-blue)]"
+              >
+                Wikipedia ↗
+              </a>
+            </p>
+          ) : null}
         </div>
       </div>
       <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:shrink-0 sm:justify-end">
         <span className={`rounded-full px-3 py-1 text-sm font-medium ${isVacantSeat ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]" : getPartyTone(member.partyCode)}`}>
           {displayPartyLabel}
         </span>
-        <span className="text-[1.2rem] text-[var(--muted)]" aria-hidden="true">
-          ›
-        </span>
+        <Link href={`/members/${member.slug}`} className="text-sm font-medium text-[var(--accent-blue)]">
+          View profile
+        </Link>
       </div>
-    </Link>
+      </div>
+    </article>
   );
 }
 

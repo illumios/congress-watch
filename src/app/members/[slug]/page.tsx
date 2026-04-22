@@ -147,6 +147,18 @@ export default async function MemberPage({
         <div>
           <p className="text-[0.78rem] uppercase tracking-[0.22em] text-[var(--muted)]">Member Profile</p>
           <h1 className="mt-2 font-serif text-[2.7rem] leading-[0.98] text-[var(--ink)] sm:text-5xl">{displayName}</h1>
+          {data.member.wikipediaUrl ? (
+            <p className="mt-3">
+              <a
+                href={data.member.wikipediaUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-medium text-[var(--accent-blue)]"
+              >
+                Wikipedia ↗
+              </a>
+            </p>
+          ) : null}
         </div>
         <div className="hidden text-sm text-[var(--muted)] lg:block">
           <a
