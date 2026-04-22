@@ -192,8 +192,8 @@ export default async function HomePage() {
       <section className="overflow-hidden rounded-[1.7rem] border border-[var(--border)] bg-white shadow-[0_18px_48px_rgba(15,35,58,0.08)]">
         <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
           <div className="order-2 relative z-10 px-6 py-7 sm:px-8 sm:py-8 lg:order-1 lg:px-10 lg:py-12">
-            <h1 className="max-w-[8ch] font-serif text-[3rem] leading-[0.96] tracking-[-0.04em] text-[var(--navy)] sm:max-w-[9ch] sm:text-[3.4rem] lg:max-w-[12ch] lg:text-[4.1rem]">
-              Congress deserves the same scrutiny as the presidency
+            <h1 className="max-w-[10ch] font-serif text-[3rem] leading-[0.96] tracking-[-0.04em] text-[var(--navy)] sm:max-w-[11ch] sm:text-[3.4rem] lg:max-w-[14ch] lg:text-[4.1rem]">
+              Nonpartisan data on the people, votes, and laws shaping Congress
             </h1>
             <div className="mt-5 h-[2px] w-16 bg-[var(--accent-red)]" />
             <p className="mt-5 max-w-[28rem] text-[1rem] leading-7 text-[var(--muted)] sm:text-[1.05rem] sm:leading-8">
