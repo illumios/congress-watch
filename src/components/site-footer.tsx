@@ -18,7 +18,7 @@ export function SiteFooter() {
             Search
           </Link>
         </div>
-        <p>Congress Ledger is a public-interest civic interface built around official-source-first congressional data.</p>
+        <p>Congress.Watch is a public-interest civic interface built around official-source-first congressional data.</p>
         <p>Any AI-generated language must be labeled AI-assisted and traceable to stored source-backed facts.</p>
       </div>
     </footer>

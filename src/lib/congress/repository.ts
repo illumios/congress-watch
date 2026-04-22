@@ -22,7 +22,7 @@ const rosterSnapshot = seedRosterSnapshot as SeedRosterSnapshot;
 function createBaseDataset(): CongressDataset {
   return {
     metadata: {
-      title: "Congress Watch V1 data layer",
+      title: "Congress.Watch v1 data layer",
       origin: "seed",
       completeness: "partial",
       generatedAt: new Date().toISOString(),

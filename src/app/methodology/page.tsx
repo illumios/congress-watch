@@ -5,7 +5,7 @@ export default function MethodologyPage() {
     <main className="mx-auto w-full max-w-5xl px-5 py-12 lg:px-8">
       <PageIntro
         eyebrow="Methodology"
-        title="How Congress Ledger handles data, facts, and AI"
+        title="How Congress.Watch handles data, facts, and AI"
         description="The product is designed to stay factual, source-linked, and current-member-focused. These rules matter as much as the interface itself."
       />
       <div className="mt-10 space-y-6 rounded-[1.75rem] border border-[var(--border)] bg-white p-6 leading-8 text-[var(--muted)]">

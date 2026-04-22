@@ -261,7 +261,7 @@ async function fetchText(url: string, revalidate: number) {
   const response = await fetch(url, {
     next: { revalidate },
     headers: {
-      "User-Agent": "Congress Ledger/1.0",
+      "User-Agent": "Congress.Watch/1.0",
       Accept: "application/json, text/xml, application/xml, text/html;q=0.9",
     },
   });
@@ -277,7 +277,7 @@ async function fetchJson<T>(url: string, revalidate: number) {
   const response = await fetch(url, {
     next: { revalidate },
     headers: {
-      "User-Agent": "Congress Ledger/1.0",
+      "User-Agent": "Congress.Watch/1.0",
       Accept: "application/json",
     },
   });

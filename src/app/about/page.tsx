@@ -6,7 +6,7 @@ export default function AboutPage() {
       <PageIntro
         eyebrow="About"
         title="A civic product about the branch that writes the law"
-        description="Congress Ledger exists to make congressional activity easier to browse, compare, and understand without partisan framing or campaign-style presentation."
+        description="Congress.Watch exists to make congressional activity easier to browse, compare, and understand without partisan framing or campaign-style presentation."
       />
       <div className="mt-10 space-y-6 rounded-[1.75rem] border border-[var(--border)] bg-white p-6 leading-8 text-[var(--muted)]">
         <p>The site is organized around current members of Congress, official roll-call votes, sponsored bills, and public-source transparency.</p>
