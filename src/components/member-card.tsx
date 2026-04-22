@@ -9,8 +9,8 @@ export function MemberCard({ member }: { member: Member }) {
   const displayPartyLabel = isVacantSeat ? "Vacant" : member.partyName;
 
   return (
-    <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-4 shadow-[0_16px_40px_rgba(12,33,58,0.06)] sm:p-5">
-      <div className="flex items-start justify-between gap-4">
+    <article className="min-w-0 rounded-[1.5rem] border border-[var(--border)] bg-white p-4 shadow-[0_16px_40px_rgba(12,33,58,0.06)] sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-4">
           <MemberAvatar
             member={member}
@@ -25,14 +25,14 @@ export function MemberCard({ member }: { member: Member }) {
                 href={member.wikipediaUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 inline-block font-serif text-[1.85rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:text-2xl"
+                className="mt-2 block max-w-full break-words font-serif text-[1.85rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:text-2xl"
               >
                 {displayName}
               </a>
             ) : (
-              <h3 className="mt-2 font-serif text-[1.85rem] leading-tight text-[var(--ink)] sm:text-2xl">{displayName}</h3>
+              <h3 className="mt-2 break-words font-serif text-[1.85rem] leading-tight text-[var(--ink)] sm:text-2xl">{displayName}</h3>
             )}
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{member.roleLabel}</p>
+            <p className="mt-2 break-words text-sm leading-6 text-[var(--muted)]">{member.roleLabel}</p>
             {member.wikipediaUrl ? (
               <p className="mt-2">
                 <a
@@ -48,7 +48,7 @@ export function MemberCard({ member }: { member: Member }) {
           </div>
         </div>
         <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${
+          className={`shrink-0 self-start rounded-full px-3 py-1 text-xs font-medium ${
             isVacantSeat
               ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]"
               : member.partyCode === "R"
@@ -71,9 +71,12 @@ export function MemberCard({ member }: { member: Member }) {
           <p className="mt-2 text-sm font-medium text-[var(--ink)]">{member.committees.length}</p>
         </div>
       </div>
-      <div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--muted)]">
+      <div className="mt-5 flex min-w-0 flex-wrap gap-2 text-xs text-[var(--muted)]">
         {member.committees.slice(0, 3).map((committee) => (
-          <span key={`${member.bioguideId}-${committee.code}`} className="rounded-full border border-[var(--border)] px-3 py-1">
+          <span
+            key={`${member.bioguideId}-${committee.code}`}
+            className="inline-flex max-w-full whitespace-normal break-words rounded-full border border-[var(--border)] px-3 py-1 leading-5"
+          >
             {committee.name}
           </span>
         ))}
