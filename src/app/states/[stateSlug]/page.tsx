@@ -283,7 +283,7 @@ export default async function StateDetailPage({
           <section className="mt-5 grid gap-5 xl:grid-cols-[1.06fr_0.94fr]">
             <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="Current Members" count={allMembers.length} href={buildStateViewHref(data.slug, "all")} />
-              <div className="mt-5 grid gap-5 xl:grid-cols-2">
+              <div className="mt-5 grid gap-5 lg:grid-cols-2">
                 {allMembers.slice(0, 4).map((member) => (
                   <MemberCard key={member.bioguideId} member={member} />
                 ))}
@@ -309,7 +309,7 @@ export default async function StateDetailPage({
           <article className="space-y-5">
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="House Members" count={houseMembers.length} href={buildStateViewHref(data.slug, "house")} />
-              <div className="mt-5 grid gap-5 xl:grid-cols-2">
+              <div className="mt-5 grid gap-5 lg:grid-cols-2">
                 {houseMembers.map((member) => (
                   <MemberCard key={member.bioguideId} member={member} />
                 ))}
@@ -318,7 +318,7 @@ export default async function StateDetailPage({
 
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="Senators" count={senateMembers.length} href={buildStateViewHref(data.slug, "senate")} />
-              <div className="mt-5 grid gap-5 xl:grid-cols-2">
+              <div className="mt-5 grid gap-5 lg:grid-cols-2">
                 {senateMembers.map((member) => (
                   <MemberCard key={member.bioguideId} member={member} />
                 ))}
@@ -346,7 +346,7 @@ export default async function StateDetailPage({
               title={activeView === "house" ? "House Members" : "Senators"}
               count={visibleMembers.length}
             />
-            <div className="mt-5 grid gap-5 xl:grid-cols-2">
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
               {visibleMembers.map((member) => (
                 <MemberCard key={member.bioguideId} member={member} />
               ))}
