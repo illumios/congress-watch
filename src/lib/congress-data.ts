@@ -497,7 +497,9 @@ export function parseSenateRosterXml(cvcXml: string, contactsXml: string, curren
     });
   }
 
-  return asArray(cvc.congress_contact_info?.senator)
+  const senateMembers = cvc.senators?.senator ?? cvc.congress_contact_info?.senator;
+
+  return asArray(senateMembers)
     .map((senator): Member | null => {
       const stateCode = String(senator.state ?? "").trim();
       if (!(stateCode in STATE_NAMES)) return null;
