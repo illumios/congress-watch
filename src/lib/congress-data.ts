@@ -385,6 +385,7 @@ export function parseSenateVoteXml(xml: string, sourceUrl: string): Vote {
   const session = Number(root.session);
   const calendarYear = Number(root.congress_year);
   const rollCallNumber = Number(root.vote_number);
+  const counts = root.count;
   const positions = asArray(root.members?.member).map((member) => ({
     memberId: String(member.lis_member_id ?? ""),
     memberName: stripHtml(String(member.member_full ?? `${member.first_name ?? ""} ${member.last_name ?? ""}`)),
@@ -406,16 +407,16 @@ export function parseSenateVoteXml(xml: string, sourceUrl: string): Vote {
     title: String(root.vote_title ?? "Senate Vote"),
     question: stripHtml(String(root.question ?? root.vote_question_text ?? "")),
     issue,
-    result: String(root.vote_result_text ?? root.vote_result ?? ""),
+    result: String(root.vote_result ?? root.vote_result_text ?? ""),
     dateLabel: String(root.vote_date ?? ""),
     timestamp,
     sourceUrl,
     officialUrl: `https://www.senate.gov/legislative/LIS/roll_call_votes/vote${congress}${session}/vote_${congress}_${session}_${String(rollCallNumber).padStart(5, "0")}.xml`,
     positions,
-    yeaCount: root.vote_tally?.yeas ? Number(root.vote_tally.yeas) : null,
-    nayCount: root.vote_tally?.nays ? Number(root.vote_tally.nays) : null,
-    presentCount: null,
-    notVotingCount: null,
+    yeaCount: counts?.yeas ? Number(counts.yeas) : null,
+    nayCount: counts?.nays ? Number(counts.nays) : null,
+    presentCount: counts?.present ? Number(counts.present) : null,
+    notVotingCount: counts?.absent ? Number(counts.absent) : null,
   };
 }
 
