@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { MemberAvatar } from "@/components/member-avatar";
+import { MemberCard } from "@/components/member-card";
 import { getStateOverview, type Member, type Vote } from "@/lib/congress-data";
 
 const VIEW_OPTIONS = [
@@ -26,23 +26,6 @@ function formatVoteDate(value: string) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(parsed));
-}
-
-function buildMemberSubtitle(member: Member) {
-  if (member.chamber === "house") {
-    return `${member.partyCode} · ${member.stateName} ${member.districtLabel ?? "At-Large District"}`;
-  }
-  return `${member.partyCode} · ${member.stateName}`;
-}
-
-function getPartyTone(partyCode: string) {
-  if (partyCode === "R") {
-    return "bg-[rgba(176,48,53,0.12)] text-[var(--accent-red)]";
-  }
-  if (partyCode === "D") {
-    return "bg-[rgba(36,82,164,0.12)] text-[var(--accent-blue)]";
-  }
-  return "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]";
 }
 
 function getResultTone(result: string) {
@@ -123,61 +106,6 @@ function DelegationCard({
           <p className="font-semibold text-[var(--ink)]">{breakdown.independents}</p>
           <p className="mt-1 text-[var(--muted)]">Independent</p>
         </div>
-      </div>
-    </article>
-  );
-}
-
-function MemberListItem({ member }: { member: Member }) {
-  const isVacantSeat = !member.fullName.trim();
-  const displayName = isVacantSeat ? "Vacant Seat" : member.fullName;
-  const displayPartyLabel = isVacantSeat ? "Vacant" : member.partyName;
-
-  return (
-    <article className="rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)]">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 items-center gap-4">
-        <MemberAvatar
-          member={member}
-          className="h-14 w-14 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)]"
-        />
-        <div className="min-w-0">
-          {member.wikipediaUrl ? (
-            <a
-              href={member.wikipediaUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="truncate text-[1.05rem] font-medium text-[var(--ink)] transition hover:text-[var(--accent-blue)]"
-            >
-              {displayName}
-            </a>
-          ) : (
-            <p className="truncate text-[1.05rem] font-medium text-[var(--ink)]">{displayName}</p>
-          )}
-          <p className="mt-1 text-sm text-[var(--muted)]">{buildMemberSubtitle(member)}</p>
-          <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
-          {member.wikipediaUrl ? (
-            <p className="mt-2">
-              <a
-                href={member.wikipediaUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-medium text-[var(--accent-blue)]"
-              >
-                Wikipedia ↗
-              </a>
-            </p>
-          ) : null}
-        </div>
-      </div>
-      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:shrink-0 sm:justify-end">
-        <span className={`rounded-full px-3 py-1 text-sm font-medium ${isVacantSeat ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]" : getPartyTone(member.partyCode)}`}>
-          {displayPartyLabel}
-        </span>
-        <Link href={`/members/${member.slug}`} className="text-sm font-medium text-[var(--accent-blue)]">
-          View profile
-        </Link>
-      </div>
       </div>
     </article>
   );
@@ -355,9 +283,9 @@ export default async function StateDetailPage({
           <section className="mt-5 grid gap-5 xl:grid-cols-[1.06fr_0.94fr]">
             <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="Current Members" count={allMembers.length} href={buildStateViewHref(data.slug, "all")} />
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 grid gap-5 xl:grid-cols-2">
                 {allMembers.slice(0, 4).map((member) => (
-                  <MemberListItem key={member.bioguideId} member={member} />
+                  <MemberCard key={member.bioguideId} member={member} />
                 ))}
               </div>
             </article>
@@ -381,18 +309,18 @@ export default async function StateDetailPage({
           <article className="space-y-5">
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="House Members" count={houseMembers.length} href={buildStateViewHref(data.slug, "house")} />
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 grid gap-5 xl:grid-cols-2">
                 {houseMembers.map((member) => (
-                  <MemberListItem key={member.bioguideId} member={member} />
+                  <MemberCard key={member.bioguideId} member={member} />
                 ))}
               </div>
             </section>
 
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <SectionHeader title="Senators" count={senateMembers.length} href={buildStateViewHref(data.slug, "senate")} />
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 grid gap-5 xl:grid-cols-2">
                 {senateMembers.map((member) => (
-                  <MemberListItem key={member.bioguideId} member={member} />
+                  <MemberCard key={member.bioguideId} member={member} />
                 ))}
               </div>
             </section>
@@ -418,9 +346,9 @@ export default async function StateDetailPage({
               title={activeView === "house" ? "House Members" : "Senators"}
               count={visibleMembers.length}
             />
-            <div className="mt-5 space-y-3">
+            <div className="mt-5 grid gap-5 xl:grid-cols-2">
               {visibleMembers.map((member) => (
-                <MemberListItem key={member.bioguideId} member={member} />
+                <MemberCard key={member.bioguideId} member={member} />
               ))}
             </div>
           </article>
