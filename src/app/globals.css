@@ -70,10 +70,21 @@ select {
     box-shadow 160ms ease;
 }
 
+.button-primary *,
+.surface-navy * {
+  color: inherit;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
 .button-primary:hover,
 .button-primary:focus-visible,
 .button-primary:active,
-.button-primary:visited {
+.button-primary:visited,
+.surface-navy:hover,
+.surface-navy:focus-visible,
+.surface-navy:active,
+.surface-navy:visited {
   color: #ffffff;
 }
 
@@ -81,6 +92,11 @@ select {
   background: var(--ink);
   transform: translateY(-1px);
   box-shadow: 0 14px 28px rgba(15, 45, 76, 0.14);
+}
+
+.surface-navy {
+  background: var(--navy);
+  color: #ffffff;
 }
 
 .site-shell-panel {

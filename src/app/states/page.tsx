@@ -123,14 +123,14 @@ export default async function StatesPage({
   ).sort((left, right) => left[0].localeCompare(right[0]));
 
   return (
-    <main className="mx-auto w-full max-w-[1280px] px-5 pb-14 pt-8 lg:px-8">
+    <main className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-4 sm:px-5 sm:pt-6 lg:px-8 lg:pb-14 lg:pt-8">
       <section className="overflow-hidden rounded-[1.7rem] border border-[var(--border)] bg-white shadow-[0_18px_48px_rgba(15,35,58,0.08)]">
         <div className="grid gap-6 p-6 lg:grid-cols-[0.92fr_1.08fr] lg:p-8">
           <article className="rounded-[1.5rem] border border-[rgba(19,52,92,0.08)] bg-[linear-gradient(180deg,rgba(250,252,255,0.96),rgba(244,248,252,0.92))] p-5 sm:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">Current Congress</p>
-                <h1 className="mt-3 font-serif text-[2.35rem] leading-[1.02] text-[var(--navy)] sm:text-[2.7rem]">
+                <h1 className="mt-3 font-serif text-[2.15rem] leading-[1.02] text-[var(--navy)] sm:text-[2.7rem]">
                   Browse by State
                 </h1>
                 <p className="mt-3 max-w-[28rem] text-[0.98rem] leading-7 text-[var(--muted)]">
@@ -143,38 +143,15 @@ export default async function StatesPage({
               </div>
             </div>
 
-            <form action="/states" className="mt-6">
-              <input type="hidden" name="view" value={activeView} />
-              <label className="flex items-center gap-3 rounded-[1.05rem] border border-[rgba(19,52,92,0.12)] bg-white px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-                <span className="text-lg text-[var(--muted)]" aria-hidden="true">
-                  ⌕
-                </span>
-                <input
-                  name="q"
-                  defaultValue={q}
-                  placeholder="Search states..."
-                  className="w-full border-0 bg-transparent text-[0.98rem] text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
-                />
-              </label>
-            </form>
-
-            <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-[1rem] border border-[rgba(19,52,92,0.12)] bg-white">
-              {DIRECTORY_VIEWS.map((option) => {
-                const isActive = option.slug === activeView;
-                return (
-                  <Link
-                    key={option.slug}
-                    href={buildDirectoryHref(option.slug, q)}
-                    className={`px-3 py-3 text-center text-sm font-medium transition ${
-                      isActive
-                        ? "bg-[var(--navy)] text-white"
-                        : "text-[var(--ink)] hover:bg-[rgba(19,52,92,0.05)]"
-                    }`}
-                  >
-                    {option.label}
-                  </Link>
-                );
-              })}
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[1rem] border border-[rgba(19,52,92,0.08)] bg-white px-4 py-3">
+                <p className="text-[0.78rem] uppercase tracking-[0.16em] text-[var(--muted)]">Browse Focus</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--ink)]">Start from a directory, then step into live delegations and current member pages.</p>
+              </div>
+              <div className="rounded-[1rem] border border-[rgba(19,52,92,0.08)] bg-white px-4 py-3">
+                <p className="text-[0.78rem] uppercase tracking-[0.16em] text-[var(--muted)]">Regions</p>
+                <p className="mt-2 text-sm text-[var(--ink)]">{regionSummary.length} regional groupings</p>
+              </div>
             </div>
 
             <div className="mt-5 overflow-hidden rounded-[1.35rem] border border-[rgba(19,52,92,0.08)] bg-white p-4">
@@ -201,7 +178,41 @@ export default async function StatesPage({
           </article>
 
           <article className="rounded-[1.5rem] border border-[rgba(19,52,92,0.08)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-            <div className="flex items-center justify-between gap-4">
+            <div className="rounded-[1.2rem] border border-[rgba(19,52,92,0.08)] bg-[linear-gradient(180deg,rgba(248,251,255,0.95),rgba(243,247,252,0.92))] p-4">
+              <form action="/states">
+                <input type="hidden" name="view" value={activeView} />
+                <label className="flex items-center gap-3 rounded-[1.05rem] border border-[rgba(19,52,92,0.12)] bg-white px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                  <span className="text-lg text-[var(--muted)]" aria-hidden="true">
+                    ⌕
+                  </span>
+                  <input
+                    name="q"
+                    defaultValue={q}
+                    placeholder="Search states..."
+                    className="w-full border-0 bg-transparent text-[0.98rem] text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
+                  />
+                </label>
+              </form>
+
+              <div className="mt-4 grid grid-cols-3 overflow-hidden rounded-[1rem] border border-[rgba(19,52,92,0.12)] bg-white">
+                {DIRECTORY_VIEWS.map((option) => {
+                  const isActive = option.slug === activeView;
+                  return (
+                    <Link
+                      key={option.slug}
+                      href={buildDirectoryHref(option.slug, q)}
+                      className={`px-3 py-3 text-center text-sm font-medium transition ${
+                        isActive ? "surface-navy" : "text-[var(--ink)] hover:bg-[rgba(19,52,92,0.05)]"
+                      }`}
+                    >
+                      {option.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-4">
               <div>
                 <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                   {activeView === "region" ? "Grouped Directory" : "State Directory"}

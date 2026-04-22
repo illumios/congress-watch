@@ -136,7 +136,7 @@ function MemberListItem({ member }: { member: Member }) {
   return (
     <Link
       href={`/members/${member.slug}`}
-      className="flex items-center justify-between gap-4 rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)]"
+      className="flex flex-col gap-4 rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)] sm:flex-row sm:items-center sm:justify-between"
     >
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(248,250,253,1),rgba(232,238,247,1))] text-base font-semibold text-[var(--navy)]">
@@ -148,7 +148,7 @@ function MemberListItem({ member }: { member: Member }) {
           <p className="mt-1 text-sm text-[var(--muted)]">{member.roleLabel}</p>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-4">
+      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:shrink-0 sm:justify-end">
         <span className={`rounded-full px-3 py-1 text-sm font-medium ${isVacantSeat ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]" : getPartyTone(member.partyCode)}`}>
           {displayPartyLabel}
         </span>
@@ -193,7 +193,7 @@ function SectionHeader({
   href?: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <h2 className="font-serif text-[2rem] leading-none text-[var(--navy)]">{title}</h2>
       <div className="flex items-center gap-4">
         <span className="text-sm text-[var(--muted)]">{count} total</span>
@@ -229,8 +229,8 @@ export default async function StateDetailPage({
     activeView === "house" ? houseMembers : activeView === "senate" ? senateMembers : allMembers;
 
   return (
-    <main className="mx-auto w-full max-w-[1280px] px-5 pb-14 pt-8 lg:px-8">
-      <section className="rounded-[1.7rem] border border-[var(--border)] bg-white px-6 py-6 shadow-[0_18px_48px_rgba(15,35,58,0.08)] lg:px-8">
+    <main className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-4 sm:px-5 sm:pt-6 lg:px-8 lg:pb-14 lg:pt-8">
+      <section className="rounded-[1.7rem] border border-[var(--border)] bg-white px-5 py-5 shadow-[0_18px_48px_rgba(15,35,58,0.08)] sm:px-6 sm:py-6 lg:px-8">
         <Link href="/states" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-blue)]">
           <span aria-hidden="true">‹</span>
           Browse by State
@@ -239,7 +239,7 @@ export default async function StateDetailPage({
         <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[0.84rem] uppercase tracking-[0.16em] text-[var(--muted)]">{data.code}</p>
-            <h1 className="mt-2 font-serif text-[2.8rem] leading-[0.98] text-[var(--navy)]">{data.state}</h1>
+            <h1 className="mt-2 font-serif text-[2.45rem] leading-[0.98] text-[var(--navy)] sm:text-[2.8rem]">{data.state}</h1>
             <p className="mt-2 text-[1rem] text-[var(--muted)]">Current Congress</p>
           </div>
           <nav className="grid grid-cols-2 overflow-hidden rounded-[1rem] border border-[rgba(19,52,92,0.12)] bg-white sm:grid-cols-4">
@@ -250,9 +250,7 @@ export default async function StateDetailPage({
                   key={option.slug}
                   href={buildStateViewHref(data.slug, option.slug)}
                   className={`px-4 py-3 text-center text-sm font-medium transition ${
-                    isActive
-                      ? "bg-[var(--navy)] text-white"
-                      : "text-[var(--ink)] hover:bg-[rgba(19,52,92,0.05)]"
+                    isActive ? "surface-navy" : "text-[var(--ink)] hover:bg-[rgba(19,52,92,0.05)]"
                   }`}
                 >
                   {option.label}
