@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Libre_Baskerville, Public_Sans } from "next/font/google";
 
-import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -39,7 +38,6 @@ export default function RootLayout({
           <SiteHeader />
           {children}
           <SiteFooter />
-          <MobileTabBar />
         </div>
       </body>
     </html>
