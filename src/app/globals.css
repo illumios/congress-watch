@@ -35,7 +35,6 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  overflow-x: clip;
   background:
     linear-gradient(180deg, #f3f7fb 0, #f9fbfd 220px, var(--paper) 420px),
     radial-gradient(circle at top right, rgba(39, 93, 181, 0.06), transparent 32%),

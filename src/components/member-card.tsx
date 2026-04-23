@@ -10,13 +10,13 @@ export function MemberCard({ member }: { member: Member }) {
 
   return (
     <article className="w-full min-w-0 max-w-full overflow-hidden rounded-[1.35rem] border border-[var(--border)] bg-white p-4 shadow-[0_16px_40px_rgba(12,33,58,0.06)] sm:rounded-[1.5rem] sm:p-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4">
         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <MemberAvatar
             member={member}
             className="h-14 w-14 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)] sm:h-16 sm:w-16"
           />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">
               {member.chamber === "house" ? "House" : "Senate"}
             </p>
@@ -48,7 +48,7 @@ export function MemberCard({ member }: { member: Member }) {
           </div>
         </div>
         <span
-          className={`shrink-0 self-start rounded-full px-3 py-1 text-xs font-medium ${
+          className={`self-start rounded-full px-3 py-1 text-xs font-medium ${
             isVacantSeat
               ? "bg-[rgba(12,33,58,0.08)] text-[var(--ink)]"
               : member.partyCode === "R"
