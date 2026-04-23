@@ -117,14 +117,14 @@ function VoteListItem({ vote }: { vote: Vote & { delegationBreakdown: Vote["posi
       href={`/votes/${vote.chamber}/${vote.congress}/${vote.session}/${vote.rollCallNumber}`}
       className="block rounded-[1.15rem] border border-[rgba(19,52,92,0.1)] bg-white px-4 py-4 transition hover:border-[rgba(19,52,92,0.2)] hover:bg-[rgba(244,248,252,0.9)]"
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
-          <p className="truncate text-[1rem] font-medium text-[var(--ink)]">{vote.title}</p>
+          <p className="text-[1rem] font-medium leading-7 text-[var(--ink)] sm:truncate">{vote.title}</p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {vote.chamber === "house" ? "House Vote" : "Senate Vote"} · {formatVoteDate(vote.timestamp)}
           </p>
         </div>
-        <p className={`shrink-0 text-sm font-medium ${getResultTone(vote.result)}`}>{vote.result}</p>
+        <p className={`text-sm font-medium sm:shrink-0 ${getResultTone(vote.result)}`}>{vote.result}</p>
       </div>
       <p className="mt-3 line-clamp-2 text-sm leading-6 text-[var(--muted)]">{vote.question}</p>
       <p className="mt-3 text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
@@ -180,7 +180,7 @@ export default async function StateDetailPage({
     activeView === "house" ? houseMembers : activeView === "senate" ? senateMembers : allMembers;
 
   return (
-    <main className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-4 sm:px-5 sm:pt-6 lg:px-8 lg:pb-14 lg:pt-8">
+    <main className="mx-auto w-full max-w-[1280px] overflow-x-hidden px-4 pb-24 pt-4 sm:px-5 sm:pt-6 lg:px-8 lg:pb-14 lg:pt-8">
       <section className="rounded-[1.7rem] border border-[var(--border)] bg-white px-5 py-5 shadow-[0_18px_48px_rgba(15,35,58,0.08)] sm:px-6 sm:py-6 lg:px-8">
         <Link href="/states" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--accent-blue)]">
           <span aria-hidden="true">‹</span>
@@ -190,10 +190,10 @@ export default async function StateDetailPage({
         <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[0.84rem] uppercase tracking-[0.16em] text-[var(--muted)]">{data.code}</p>
-            <h1 className="mt-2 font-serif text-[2.45rem] leading-[0.98] text-[var(--navy)] sm:text-[2.8rem]">{data.state}</h1>
+            <h1 className="mt-2 font-serif text-[2.2rem] leading-[0.98] text-[var(--navy)] sm:text-[2.8rem]">{data.state}</h1>
             <p className="mt-2 text-[1rem] text-[var(--muted)]">Current Congress</p>
           </div>
-          <nav className="grid grid-cols-2 overflow-hidden rounded-[1rem] border border-[rgba(19,52,92,0.12)] bg-white sm:grid-cols-4">
+          <nav className="grid max-w-full grid-cols-2 overflow-hidden rounded-[1rem] border border-[rgba(19,52,92,0.12)] bg-white sm:grid-cols-4">
             {VIEW_OPTIONS.map((option) => {
               const isActive = option.slug === activeView;
               return (
@@ -214,9 +214,33 @@ export default async function StateDetailPage({
 
       {activeView === "overview" ? (
         <>
-          <section className="mt-5 grid gap-5 xl:grid-cols-[1.18fr_0.82fr]">
-            <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <h2 className="font-serif text-[2rem] leading-none text-[var(--navy)]">Party Breakdown</h2>
+          <section className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[1.06fr_0.94fr]">
+            <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+              <SectionHeader title="Current Members" count={allMembers.length} href={buildStateViewHref(data.slug, "all")} />
+              <div className="mt-5 grid gap-5">
+                {allMembers.slice(0, 4).map((member) => (
+                  <MemberCard key={member.bioguideId} member={member} />
+                ))}
+              </div>
+            </article>
+
+            <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+              <SectionHeader title="Recent Votes" count={data.relatedVotes.length} />
+              <div className="mt-5 space-y-3">
+                {data.relatedVotes.length > 0 ? (
+                  data.relatedVotes.slice(0, 4).map((vote) => <VoteListItem key={vote.slug} vote={vote} />)
+                ) : (
+                  <div className="rounded-[1.1rem] border border-dashed border-[rgba(19,52,92,0.18)] px-4 py-6 text-sm leading-7 text-[var(--muted)]">
+                    No recent roll-call vote breakdown was available for this delegation in the current cached window.
+                  </div>
+                )}
+              </div>
+            </article>
+          </section>
+
+          <section className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[1.18fr_0.82fr]">
+            <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+              <h2 className="font-serif text-[1.85rem] leading-none text-[var(--navy)] sm:text-[2rem]">Party Breakdown</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DelegationCard
                   title="House Delegation"
@@ -230,78 +254,49 @@ export default async function StateDetailPage({
                 />
               </div>
 
-              <div className="mt-4 rounded-[1.2rem] border border-[rgba(19,52,92,0.1)] bg-[linear-gradient(180deg,rgba(250,252,255,0.96),rgba(244,248,252,0.92))] px-5 py-5">
-                <div className="flex flex-wrap items-center gap-5">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--navy)] text-xl text-white">
+              <div className="mt-4 rounded-[1.2rem] border border-[rgba(19,52,92,0.1)] bg-[linear-gradient(180deg,rgba(250,252,255,0.96),rgba(244,248,252,0.92))] px-4 py-5 sm:px-5">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--navy)] text-lg text-white">
                     ⌂
                   </div>
                   <div>
                     <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">Total Delegation</p>
-                    <p className="mt-1 font-serif text-[2.4rem] leading-none text-[var(--ink)]">{allMembers.length}</p>
+                    <p className="mt-1 font-serif text-[2rem] leading-none text-[var(--ink)]">{allMembers.length}</p>
                   </div>
-                  <div className="h-10 w-px bg-[rgba(19,52,92,0.1)]" />
-                  <div className="grid grid-cols-2 gap-5 text-sm text-[var(--muted)] sm:grid-cols-3">
+                  <div className="grid grid-cols-3 gap-4 text-sm text-[var(--muted)]">
                     <div>
-                      <p className="text-[1.3rem] font-semibold text-[var(--ink)]">{houseMembers.length}</p>
+                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">{houseMembers.length}</p>
                       <p>House</p>
                     </div>
                     <div>
-                      <p className="text-[1.3rem] font-semibold text-[var(--ink)]">{senateMembers.length}</p>
+                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">{senateMembers.length}</p>
                       <p>Senate</p>
                     </div>
                     <div>
-                      <p className="text-[1.3rem] font-semibold text-[var(--ink)]">
+                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">
                         {(data.partyBreakdown.D ?? 0) + (data.partyBreakdown.R ?? 0) + (data.partyBreakdown.I ?? 0)}
                       </p>
-                      <p>Voting Members</p>
+                      <p>Voting</p>
                     </div>
                   </div>
                 </div>
               </div>
             </article>
 
-            <aside className="rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(247,250,254,1),rgba(238,244,251,0.92))] p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <div className="rounded-[1.2rem] bg-white/70 px-4 py-4">
+            <aside className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(247,250,254,1),rgba(238,244,251,0.92))] p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
+              <div className="rounded-[1.2rem] bg-white/85 px-4 py-4">
                 <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">About {data.state}</p>
                 <p className="mt-4 text-[1rem] leading-8 text-[var(--ink)]">
                   {data.state} is represented by {houseMembers.length} voting members in the House of Representatives and {senateMembers.length} senators in the U.S. Senate.
                 </p>
               </div>
-              <div className="mt-4 grid gap-3">
-                <div className="rounded-[1.1rem] border border-[rgba(19,52,92,0.08)] bg-white px-4 py-4">
-                  <p className="text-[0.78rem] uppercase tracking-[0.16em] text-[var(--muted)]">Most Recent View</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--ink)]">Use the member tabs to move between the full delegation, House seats, and senators with the same card language as the mobile reference.</p>
-                </div>
-                <div className="rounded-[1.1rem] border border-[rgba(19,52,92,0.08)] bg-white px-4 py-4">
-                  <p className="text-[0.78rem] uppercase tracking-[0.16em] text-[var(--muted)]">Official Scope</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--ink)]">These listings are built from current official House and Senate rosters plus recent roll-call records tied back to this delegation.</p>
-                </div>
+              <div className="mt-4 rounded-[1.1rem] border border-[rgba(19,52,92,0.08)] bg-white px-4 py-4">
+                <p className="text-[0.78rem] uppercase tracking-[0.16em] text-[var(--muted)]">Source Scope</p>
+                <p className="mt-2 text-sm leading-7 text-[var(--ink)]">
+                  This page is built from current official House and Senate rosters, then paired with recent roll-call activity tied back to this delegation.
+                </p>
               </div>
             </aside>
-          </section>
-
-          <section className="mt-5 grid gap-5 xl:grid-cols-[1.06fr_0.94fr]">
-            <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <SectionHeader title="Current Members" count={allMembers.length} href={buildStateViewHref(data.slug, "all")} />
-              <div className="mt-5 grid gap-5">
-                {allMembers.slice(0, 4).map((member) => (
-                  <MemberCard key={member.bioguideId} member={member} />
-                ))}
-              </div>
-            </article>
-
-            <article className="rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <SectionHeader title="Recent Votes" count={data.relatedVotes.length} />
-              <div className="mt-5 space-y-3">
-                {data.relatedVotes.length > 0 ? (
-                  data.relatedVotes.slice(0, 4).map((vote) => <VoteListItem key={vote.slug} vote={vote} />)
-                ) : (
-                  <div className="rounded-[1.1rem] border border-dashed border-[rgba(19,52,92,0.18)] px-4 py-6 text-sm leading-7 text-[var(--muted)]">
-                    No recent roll-call vote breakdown was available for this delegation in the current cached window.
-                  </div>
-                )}
-              </div>
-            </article>
           </section>
         </>
       ) : activeView === "all" ? (

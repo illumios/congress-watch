@@ -14,7 +14,7 @@ export function MemberCard({ member }: { member: Member }) {
         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <MemberAvatar
             member={member}
-            className="h-14 w-14 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)] sm:h-16 sm:w-16"
+            className="h-12 w-12 shrink-0 rounded-full border border-[rgba(19,52,92,0.1)] sm:h-16 sm:w-16"
           />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--muted)]">
@@ -25,12 +25,12 @@ export function MemberCard({ member }: { member: Member }) {
                 href={member.wikipediaUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1.5 block max-w-full break-words font-serif text-[1.45rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:mt-2 sm:text-2xl"
+                className="mt-1.5 block max-w-full break-words font-serif text-[1.28rem] leading-tight text-[var(--ink)] transition hover:text-[var(--accent-blue)] sm:mt-2 sm:text-2xl"
               >
                 {displayName}
               </a>
             ) : (
-              <h3 className="mt-1.5 break-words font-serif text-[1.45rem] leading-tight text-[var(--ink)] sm:mt-2 sm:text-2xl">{displayName}</h3>
+              <h3 className="mt-1.5 break-words font-serif text-[1.28rem] leading-tight text-[var(--ink)] sm:mt-2 sm:text-2xl">{displayName}</h3>
             )}
             <p className="mt-1.5 break-words text-sm leading-6 text-[var(--muted)] sm:mt-2">{member.roleLabel}</p>
             {member.wikipediaUrl ? (
@@ -61,17 +61,17 @@ export function MemberCard({ member }: { member: Member }) {
           {displayPartyLabel}
         </span>
       </div>
-      <div className="mt-5 grid gap-3 sm:mt-6 sm:gap-4 sm:grid-cols-2">
-        <div className="rounded-[1rem] bg-[var(--surface)] px-4 py-3">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-5 sm:gap-4">
+        <div className="rounded-[1rem] bg-[var(--surface)] px-3 py-3 sm:px-4">
           <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)]">Term ends</p>
           <p className="mt-2 text-sm font-medium text-[var(--ink)]">{formatDisplayDate(member.termEndDate)}</p>
         </div>
-        <div className="rounded-[1rem] bg-[var(--surface)] px-4 py-3">
+        <div className="rounded-[1rem] bg-[var(--surface)] px-3 py-3 sm:px-4">
           <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)]">Committees</p>
           <p className="mt-2 text-sm font-medium text-[var(--ink)]">{member.committees.length}</p>
         </div>
       </div>
-      <div className="mt-5 hidden min-w-0 flex-wrap gap-2 text-xs text-[var(--muted)] sm:flex">
+      <div className="mt-4 hidden min-w-0 flex-wrap gap-2 text-xs text-[var(--muted)] sm:flex">
         {member.committees.slice(0, 3).map((committee) => (
           <span
             key={`${member.bioguideId}-${committee.code}`}
@@ -83,7 +83,7 @@ export function MemberCard({ member }: { member: Member }) {
       </div>
       <Link
         href={`/members/${member.slug}`}
-        className="button-primary mt-5 w-full max-w-full px-4 py-2 text-sm font-medium sm:mt-6 sm:w-auto"
+        className="button-primary mt-4 w-full max-w-full px-4 py-2 text-sm font-medium sm:mt-5 sm:w-auto"
       >
         View profile
       </Link>
