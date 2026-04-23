@@ -1,16 +1,36 @@
 import Link from "next/link";
 
+import { MemberBrowseControls } from "@/components/member-browse-controls";
 import { MemberAvatar } from "@/components/member-avatar";
 import { PageIntro } from "@/components/page-intro";
 import { searchSite } from "@/lib/congress-data";
+import {
+  filterAndSortMembers,
+  getMemberStateOptions,
+  hasActiveMemberBrowseFilters,
+  normalizeMemberBrowseParams,
+} from "@/lib/member-browse";
+
+function buildSearchResetHref(query: string) {
+  const params = new URLSearchParams();
+  if (query.trim()) {
+    params.set("q", query.trim());
+  }
+
+  const queryString = params.toString();
+  return queryString ? `/search?${queryString}` : "/search";
+}
 
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; sort?: string; party?: string; state?: string; chamber?: string; term?: string }>;
 }) {
-  const { q = "" } = await searchParams;
+  const { q = "", sort, party, state, chamber, term } = await searchParams;
   const results = await searchSite(q);
+  const browseParams = normalizeMemberBrowseParams({ sort, party, state, chamber, term });
+  const filteredMembers = filterAndSortMembers(results.members, browseParams);
+  const stateOptions = getMemberStateOptions(results.members);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-4 sm:px-5 sm:pt-6 lg:px-8 lg:pb-14 lg:pt-12">
@@ -37,9 +57,24 @@ export default async function SearchPage({
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <section className="rounded-[1.5rem] border border-[var(--border)] bg-white p-6">
             <h2 className="font-serif text-3xl text-[var(--ink)]">Members</h2>
+
+            {results.members.length > 0 ? (
+              <MemberBrowseControls
+                action="/search"
+                values={browseParams}
+                hiddenInputs={{ q }}
+                resetHref={buildSearchResetHref(q)}
+                resultCount={filteredMembers.length}
+                showReset={hasActiveMemberBrowseFilters(browseParams)}
+                showState
+                showChamber
+                stateOptions={stateOptions}
+              />
+            ) : null}
+
             <div className="mt-5 space-y-3">
-              {results.members.length > 0 ? (
-                results.members.slice(0, 30).map((member) => (
+              {filteredMembers.length > 0 ? (
+                filteredMembers.slice(0, 30).map((member) => (
                   <article key={member.bioguideId} className="rounded-[1rem] border border-[var(--border)] px-4 py-4 transition hover:border-[var(--accent-blue)]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex min-w-0 items-start gap-3">
@@ -68,6 +103,8 @@ export default async function SearchPage({
                     </div>
                   </article>
                 ))
+              ) : results.members.length > 0 ? (
+                <p className="text-sm leading-7 text-[var(--muted)]">No matching members fit the current filters.</p>
               ) : (
                 <p className="text-sm leading-7 text-[var(--muted)]">No matching members found.</p>
               )}

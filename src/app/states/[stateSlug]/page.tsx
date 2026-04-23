@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { MemberBrowseControls } from "@/components/member-browse-controls";
 import { MemberCard } from "@/components/member-card";
 import { getStateOverview, type Member, type Vote } from "@/lib/congress-data";
+import {
+  DEFAULT_MEMBER_BROWSE_PARAMS,
+  filterAndSortMembers,
+  hasActiveMemberBrowseFilters,
+  normalizeMemberBrowseParams,
+  type MemberBrowseParams,
+} from "@/lib/member-browse";
 
 const VIEW_OPTIONS = [
   { slug: "overview", label: "Overview" },
@@ -11,11 +19,27 @@ const VIEW_OPTIONS = [
   { slug: "senate", label: "Senate" },
 ] as const;
 
-function buildStateViewHref(stateSlug: string, view: string) {
-  if (view === "overview") {
-    return `/states/${stateSlug}`;
+function buildStateViewHref(stateSlug: string, view: string, browseParams: MemberBrowseParams) {
+  const params = new URLSearchParams();
+
+  if (view !== "overview") {
+    params.set("view", view);
   }
-  return `/states/${stateSlug}?view=${view}`;
+
+  if (browseParams.sort !== DEFAULT_MEMBER_BROWSE_PARAMS.sort) {
+    params.set("sort", browseParams.sort);
+  }
+
+  if (browseParams.party !== DEFAULT_MEMBER_BROWSE_PARAMS.party) {
+    params.set("party", browseParams.party);
+  }
+
+  if (browseParams.term !== DEFAULT_MEMBER_BROWSE_PARAMS.term) {
+    params.set("term", browseParams.term);
+  }
+
+  const queryString = params.toString();
+  return queryString ? `/states/${stateSlug}?${queryString}` : `/states/${stateSlug}`;
 }
 
 function formatVoteDate(value: string) {
@@ -163,9 +187,9 @@ export default async function StateDetailPage({
   searchParams,
 }: {
   params: Promise<{ stateSlug: string }>;
-  searchParams: Promise<{ view?: string }>;
+  searchParams: Promise<{ view?: string; sort?: string; party?: string; term?: string }>;
 }) {
-  const [{ stateSlug }, { view = "overview" }] = await Promise.all([params, searchParams]);
+  const [{ stateSlug }, { view = "overview", sort, party, term }] = await Promise.all([params, searchParams]);
   const data = await getStateOverview(stateSlug);
 
   if (!data) {
@@ -173,11 +197,17 @@ export default async function StateDetailPage({
   }
 
   const activeView = VIEW_OPTIONS.some((option) => option.slug === view) ? view : "overview";
-  const allMembers = data.members.slice().sort((left, right) => left.sortName.localeCompare(right.sortName));
-  const houseMembers = data.houseMembers.slice().sort((left, right) => left.sortName.localeCompare(right.sortName));
-  const senateMembers = data.senateMembers.slice().sort((left, right) => left.sortName.localeCompare(right.sortName));
+  const browseParams = normalizeMemberBrowseParams({ sort, party, term });
+  const rawAllMembers = data.members;
+  const rawHouseMembers = data.houseMembers;
+  const rawSenateMembers = data.senateMembers;
+  const allMembers = filterAndSortMembers(rawAllMembers, browseParams);
+  const houseMembers = filterAndSortMembers(rawHouseMembers, browseParams);
+  const senateMembers = filterAndSortMembers(rawSenateMembers, browseParams);
   const visibleMembers =
     activeView === "house" ? houseMembers : activeView === "senate" ? senateMembers : allMembers;
+  const stateResetHref = buildStateViewHref(data.slug, activeView, DEFAULT_MEMBER_BROWSE_PARAMS);
+  const hasActiveBrowseFilters = hasActiveMemberBrowseFilters(browseParams, ["sort", "party", "term"]);
 
   return (
     <main className="mx-auto w-full max-w-[1280px] overflow-x-hidden px-4 pb-24 pt-4 sm:px-5 sm:pt-6 lg:px-8 lg:pb-14 lg:pt-8">
@@ -199,7 +229,7 @@ export default async function StateDetailPage({
               return (
                 <Link
                   key={option.slug}
-                  href={buildStateViewHref(data.slug, option.slug)}
+                  href={buildStateViewHref(data.slug, option.slug, browseParams)}
                   className={`px-4 py-3 text-center text-sm font-medium transition ${
                     isActive ? "surface-navy" : "text-[var(--ink)] hover:bg-[rgba(19,52,92,0.05)]"
                   }`}
@@ -216,11 +246,25 @@ export default async function StateDetailPage({
         <>
           <section className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[1.06fr_0.94fr]">
             <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <SectionHeader title="Current Members" count={allMembers.length} href={buildStateViewHref(data.slug, "all")} />
+              <SectionHeader title="Current Members" count={allMembers.length} href={buildStateViewHref(data.slug, "all", browseParams)} />
+              <MemberBrowseControls
+                action={`/states/${data.slug}`}
+                values={browseParams}
+                hiddenInputs={{ view: activeView === "overview" ? undefined : activeView }}
+                resetHref={stateResetHref}
+                resultCount={allMembers.length}
+                showReset={hasActiveBrowseFilters}
+                showState={false}
+                showChamber={false}
+              />
               <div className="mt-5 grid gap-5">
-                {allMembers.slice(0, 4).map((member) => (
-                  <MemberCard key={member.bioguideId} member={member} />
-                ))}
+                {allMembers.length > 0 ? (
+                  allMembers.slice(0, 4).map((member) => <MemberCard key={member.bioguideId} member={member} />)
+                ) : (
+                  <div className="rounded-[1.1rem] border border-dashed border-[rgba(19,52,92,0.18)] px-4 py-6 text-sm leading-7 text-[var(--muted)]">
+                    No members in this state matched those filters.
+                  </div>
+                )}
               </div>
             </article>
 
@@ -244,13 +288,13 @@ export default async function StateDetailPage({
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <DelegationCard
                   title="House Delegation"
-                  detail={`${houseMembers.length} Members`}
-                  members={houseMembers}
+                  detail={`${rawHouseMembers.length} Members`}
+                  members={rawHouseMembers}
                 />
                 <DelegationCard
                   title="Senate Delegation"
-                  detail={`${senateMembers.length} Members`}
-                  members={senateMembers}
+                  detail={`${rawSenateMembers.length} Members`}
+                  members={rawSenateMembers}
                 />
               </div>
 
@@ -261,15 +305,15 @@ export default async function StateDetailPage({
                   </div>
                   <div>
                     <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">Total Delegation</p>
-                    <p className="mt-1 font-serif text-[2rem] leading-none text-[var(--ink)]">{allMembers.length}</p>
+                    <p className="mt-1 font-serif text-[2rem] leading-none text-[var(--ink)]">{rawAllMembers.length}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-4 text-sm text-[var(--muted)]">
                     <div>
-                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">{houseMembers.length}</p>
+                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">{rawHouseMembers.length}</p>
                       <p>House</p>
                     </div>
                     <div>
-                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">{senateMembers.length}</p>
+                      <p className="text-[1.2rem] font-semibold text-[var(--ink)]">{rawSenateMembers.length}</p>
                       <p>Senate</p>
                     </div>
                     <div>
@@ -287,7 +331,7 @@ export default async function StateDetailPage({
               <div className="rounded-[1.2rem] bg-white/85 px-4 py-4">
                 <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">About {data.state}</p>
                 <p className="mt-4 text-[1rem] leading-8 text-[var(--ink)]">
-                  {data.state} is represented by {houseMembers.length} voting members in the House of Representatives and {senateMembers.length} senators in the U.S. Senate.
+                  {data.state} is represented by {rawHouseMembers.length} voting members in the House of Representatives and {rawSenateMembers.length} senators in the U.S. Senate.
                 </p>
               </div>
               <div className="mt-4 rounded-[1.1rem] border border-[rgba(19,52,92,0.08)] bg-white px-4 py-4">
@@ -302,21 +346,39 @@ export default async function StateDetailPage({
       ) : activeView === "all" ? (
         <section className="mt-5 grid min-w-0 gap-5 xl:grid-cols-[1.06fr_0.94fr]">
           <article className="min-w-0 space-y-5">
+            <MemberBrowseControls
+              action={`/states/${data.slug}`}
+              values={browseParams}
+              hiddenInputs={{ view: activeView }}
+              resetHref={stateResetHref}
+              resultCount={allMembers.length}
+              showReset={hasActiveBrowseFilters}
+              showState={false}
+              showChamber={false}
+            />
             <section className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <SectionHeader title="House Members" count={houseMembers.length} href={buildStateViewHref(data.slug, "house")} />
+              <SectionHeader title="House Members" count={houseMembers.length} href={buildStateViewHref(data.slug, "house", browseParams)} />
               <div className="mt-5 grid min-w-0 gap-5">
-                {houseMembers.map((member) => (
-                  <MemberCard key={member.bioguideId} member={member} />
-                ))}
+                {houseMembers.length > 0 ? (
+                  houseMembers.map((member) => <MemberCard key={member.bioguideId} member={member} />)
+                ) : (
+                  <div className="rounded-[1.1rem] border border-dashed border-[rgba(19,52,92,0.18)] px-4 py-6 text-sm leading-7 text-[var(--muted)]">
+                    No House members in this state matched those filters.
+                  </div>
+                )}
               </div>
             </section>
 
             <section className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
-              <SectionHeader title="Senators" count={senateMembers.length} href={buildStateViewHref(data.slug, "senate")} />
+              <SectionHeader title="Senators" count={senateMembers.length} href={buildStateViewHref(data.slug, "senate", browseParams)} />
               <div className="mt-5 grid min-w-0 gap-5">
-                {senateMembers.map((member) => (
-                  <MemberCard key={member.bioguideId} member={member} />
-                ))}
+                {senateMembers.length > 0 ? (
+                  senateMembers.map((member) => <MemberCard key={member.bioguideId} member={member} />)
+                ) : (
+                  <div className="rounded-[1.1rem] border border-dashed border-[rgba(19,52,92,0.18)] px-4 py-6 text-sm leading-7 text-[var(--muted)]">
+                    No senators in this state matched those filters.
+                  </div>
+                )}
               </div>
             </section>
           </article>
@@ -341,10 +403,24 @@ export default async function StateDetailPage({
               title={activeView === "house" ? "House Members" : "Senators"}
               count={visibleMembers.length}
             />
+            <MemberBrowseControls
+              action={`/states/${data.slug}`}
+              values={browseParams}
+              hiddenInputs={{ view: activeView }}
+              resetHref={stateResetHref}
+              resultCount={visibleMembers.length}
+              showReset={hasActiveBrowseFilters}
+              showState={false}
+              showChamber={false}
+            />
             <div className="mt-5 grid min-w-0 gap-5">
-              {visibleMembers.map((member) => (
-                <MemberCard key={member.bioguideId} member={member} />
-              ))}
+              {visibleMembers.length > 0 ? (
+                visibleMembers.map((member) => <MemberCard key={member.bioguideId} member={member} />)
+              ) : (
+                <div className="rounded-[1.1rem] border border-dashed border-[rgba(19,52,92,0.18)] px-4 py-6 text-sm leading-7 text-[var(--muted)]">
+                  No members matched those filters.
+                </div>
+              )}
             </div>
           </article>
 
@@ -365,7 +441,7 @@ export default async function StateDetailPage({
             <article className="min-w-0 overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(247,250,254,1),rgba(238,244,251,0.92))] p-5 shadow-[0_10px_28px_rgba(15,35,58,0.05)] sm:p-6">
               <p className="text-[0.8rem] uppercase tracking-[0.16em] text-[var(--muted)]">Delegation Snapshot</p>
               <p className="mt-3 text-sm leading-7 text-[var(--ink)]">
-                {data.state} currently has {houseMembers.length} House members and {senateMembers.length} senators in active service.
+                {data.state} currently has {rawHouseMembers.length} House members and {rawSenateMembers.length} senators in active service.
               </p>
               <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
                 <div className="rounded-[1rem] border border-[rgba(19,52,92,0.08)] bg-white px-3 py-3">

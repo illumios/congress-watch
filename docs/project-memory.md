@@ -79,3 +79,11 @@ Congress.Watch is a civic data website focused on current members of the U.S. Ho
 - Add durable project memory for future sessions
 - Publish the repo to GitHub and deploy the site to Vercel
 - Fix the live Senate feed parser so homepage and API counts match production
+
+## Session Update 2026-04-23
+
+- Added shared URL-driven member browse controls across `/house`, `/senate`, `/search`, and `/states/[stateSlug]`.
+- Shared browse state now supports sort by name, state, party, term ending soonest, and committee count.
+- Shared filters now support party, chamber where relevant, state where relevant, and a soonest-term window.
+- State view tabs preserve active browse parameters so users can move between overview, all members, house, and senate without losing context.
+- Added automated tests for browse-parameter normalization and member filtering/sorting behavior.
